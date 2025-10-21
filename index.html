@@ -13,10 +13,11 @@
       --ink: #2a2a2a;
       --sub: #6b6b6b;
       --accent: #f9dde3;     /* brand pink */
-      --accent-ink: #b03b6b; /* deeper pink for contrast */
+      --accent-ink: #b03b6b; /* deeper pink */
       --radius: 20px;
       --shadow: 0 10px 28px rgba(0,0,0,.07);
       --border: 1px solid #f4e3ec;
+      --crop: 56px;          /* how much of the Google footer to hide */
     }
 
     * { box-sizing: border-box; }
@@ -51,53 +52,37 @@
       margin-bottom: clamp(18px, 3vw, 28px);
     }
 
-    .brand{
-      display:flex; align-items:center; gap:12px;
-    }
-
+    .brand{ display:flex; align-items:center; gap:12px; }
     .dot{
       width:36px; height:36px; border-radius:50%;
       background: conic-gradient(from 180deg at 50% 50%, #ffdfe9, #f9dde3);
       border:1px solid #f0cfe0;
       box-shadow: 0 6px 16px rgba(255, 126, 185, .25) inset;
     }
+    h1{ font-size: clamp(20px, 2.4vw, 28px); margin:0; color: var(--accent-ink); }
+    p.sub{ color: var(--sub); margin:4px 0 0; font-size: clamp(13px, 1.6vw, 15px); }
 
-    h1{
-      font-size: clamp(20px, 2.4vw, 28px);
-      margin:0;
-      color: var(--accent-ink);
-    }
-
-    p.sub{
-      color: var(--sub);
-      margin:4px 0 0 0;
-      font-size: clamp(13px, 1.6vw, 15px);
-    }
-
-    .legend{
-      display:flex; gap:16px; flex-wrap:wrap;
-      color: var(--sub); font-size: 14px;
-    }
-
+    .legend{ display:flex; gap:16px; flex-wrap:wrap; color: var(--sub); font-size: 14px; }
     .chip{ display:inline-flex; align-items:center; gap:8px; }
     .chip .swatch{ width:12px; height:12px; border-radius:3px; border:1px solid #e9d3dd; }
 
-    .cal-wrap{
-      position:relative;
-      width:100%;
+    /* ====== CALENDAR CROP WRAPPER ====== */
+    .cal-clip{
+      position: relative;
+      width: 100%;
+      /* natural aspect for desktop; mobile adjusts below */
       aspect-ratio: 4 / 3;
+      overflow: hidden;               /* crop happens here */
       background:#fff;
     }
 
-    .cal-wrap iframe{
-      position:absolute; inset:0; width:100%; height:100%;
+    /* Make the iframe taller and shift up by the crop amount so days aren’t cut */
+    .cal-clip iframe{
+      position:absolute; inset:0;
+      width:100%;
+      height: calc(100% + var(--crop));
       border:0;
-    }
-
-    /* Hide Google Calendar footer (time zone + logo) */
-    iframe::-webkit-media-controls-enclosure,
-    iframe::-webkit-calendar-picker-indicator {
-      display: none !important;
+      transform: translateY(calc(-1 * var(--crop)));
     }
 
     footer{
@@ -108,14 +93,11 @@
       margin-top: 16px;
       border-top: 1px dashed #f4e3ec;
     }
-
-    footer span {
-      color: var(--accent-ink);
-      font-weight: 600;
-    }
+    footer span { color: var(--accent-ink); font-weight: 600; }
 
     @media (max-width: 640px){
-      .cal-wrap{ aspect-ratio: 1 / 1; }
+      .cal-clip{ aspect-ratio: 1 / 1; }
+      :root{ --crop: 64px; } /* slightly larger crop on small screens */
     }
   </style>
 </head>
@@ -130,6 +112,7 @@
           <p class="sub">Check our calendar before choosing your cake date ✨</p>
         </div>
       </div>
+
       <div class="legend">
         <span class="chip"><span class="swatch" style="background:#ffffff"></span>Available</span>
         <span class="chip"><span class="swatch" style="background:#f9dde3"></span>Fully booked</span>
@@ -137,18 +120,17 @@
     </header>
 
     <section class="card">
-      <div class="cal-wrap">
-        <!-- Your live Google Calendar -->
-        <iframe 
+      <div class="cal-clip">
+        <iframe
           title="Habibe Cakery Availability Calendar"
           loading="lazy"
-          src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&showCalendars=0&showTabs=0&title=Habibe%20Cakery%20Availability&hl=en_GB&mode=MONTH&src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23f9dde3">
+          src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&showCalendars=0&showTabs=0&showTz=0&showDate=1&showTitle=0&mode=MONTH&hl=en_GB&title=Habibe%20Cakery%20Availability&src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23f9dde3">
         </iframe>
       </div>
     </section>
 
     <footer>
-      📅 <span>Habibe Cakery Calendar</span> — Updated daily to show current availability.
+       <span>Pink dates = fully booked | White dates = available for new orders </span> 
     </footer>
   </div>
 </body>
