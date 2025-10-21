@@ -4,134 +4,189 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery • Availability</title>
-  <meta name="description" content="Check live availability for Habibe Cakery cake bookings." />
+  <meta name="description" content="Habibe Cakery availability calendar. Updated daily." />
 
   <style>
     :root{
-      --bg: #fff7fa;
-      --card: #ffffff;
-      --ink: #2a2a2a;
-      --sub: #6b6b6b;
-      --accent: #f9dde3;     /* brand pink */
-      --accent-ink: #b03b6b; /* deeper pink */
-      --radius: 20px;
+      /* Brand + layout tokens */
+      --bg-1: #fff0f4;          /* subtle pink background wash */
+      --bg-2: #ffe9f0;          /* gradient stop */
+      --ink: #3a2a2f;           /* text */
+      --sub: #876c74;           /* secondary text */
+      --accent: #f7cfe0;        /* brand accent (light rose) */
+      --accent-ink: #c24d7a;    /* brand ink for highlights */
+      --card: #ffffff;          /* card surface */
       --shadow: 0 10px 28px rgba(0,0,0,.07);
-      --border: 1px solid #f4e3ec;
-      --crop: 60px;          /* how much of the Google footer to hide */
+      --radius: 22px;
+
+      /* CROPPING (hides Google footer + timezone row) */
+      /* If you still see a sliver of the Google footer, increase this by 4–6px. */
+      --crop: 84px;
     }
 
+    /* Base */
     * { box-sizing: border-box; }
-    html,body { height: 100%; margin:0; }
+    html, body { height: 100%; }
     body{
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                   Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+                   "Segoe UI Emoji", "Segoe UI Symbol";
       color: var(--ink);
       background:
-        radial-gradient(900px 600px at 90% -10%, #fff0f6 10%, transparent 60%),
-        radial-gradient(800px 600px at -10% 110%, #ffeaf3 10%, transparent 55%),
-        var(--bg);
+        radial-gradient(900px 700px at 92% -10%, #fff5fa 10%, transparent 60%),
+        radial-gradient(1200px 800px at -10% -10%, var(--bg-2) 10%, transparent 60%),
+        linear-gradient(180deg, var(--bg-1), #fff);
     }
 
     .wrap{
       max-width: 1080px;
-      margin: clamp(16px, 3vw, 40px) auto;
-      padding: clamp(12px, 2.5vw, 28px);
+      margin: clamp(18px, 3vw, 38px) auto;
+      padding: clamp(14px, 2.4vw, 26px);
     }
 
     .card{
       background: var(--card);
-      border: var(--border);
       border-radius: var(--radius);
+      border: 1px solid #f3dbe7;
       box-shadow: var(--shadow);
       overflow: hidden;
-      position: relative;
     }
 
     header{
-      display:flex; align-items:center; justify-content: space-between;
-      flex-wrap: wrap; gap:16px;
-      margin-bottom: clamp(18px, 3vw, 28px);
+      padding: 26px clamp(18px, 3vw, 28px) 16px;
+      border-bottom: 1px solid #f4e3ec;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px 16px;
+      align-items: center;
+    }
+    h1{
+      margin: 0;
+      font-size: clamp(18px, 3.2vw, 24px);
+      line-height: 1.25;
+      color: var(--ink);
+    }
+    .sub{
+      margin: 0;
+      grid-column: 1 / -1;
+      font-size: 14px;
+      color: var(--sub);
     }
 
-    .brand{ display:flex; align-items:center; gap:12px; }
+    /* Legend */
+    .legend{
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+    }
     .dot{
-      width:36px; height:36px; border-radius:50%;
-      background: conic-gradient(from 180deg at 50% 50%, #ffdfe9, #f9dde3);
-      border:1px solid #f0cfe0;
-      box-shadow: 0 6px 16px rgba(255, 126, 185, .25) inset;
+      width: 10px; height: 10px; border-radius: 50%;
+      display: inline-block; vertical-align: middle; margin-right: 6px;
+      border: 1px solid rgba(0,0,0,.08);
     }
-    h1{ font-size: clamp(20px, 2.4vw, 28px); margin:0; color: var(--accent-ink); }
-    p.sub{ color: var(--sub); margin:4px 0 0; font-size: clamp(13px, 1.6vw, 15px); }
+    .dot--avail { background: #fff; }
+    .dot--full  { background: var(--accent); }
 
-    .legend{ display:flex; gap:16px; flex-wrap:wrap; color: var(--sub); font-size: 14px; }
-    .chip{ display:inline-flex; align-items:center; gap:8px; }
-    .chip .swatch{ width:12px; height:12px; border-radius:3px; border:1px solid #e9d3dd; }
-
-    /* ====== CALENDAR CROP WRAPPER ====== */
+    /* CROPPED CALENDAR */
     .cal-clip{
       position: relative;
       width: 100%;
-      /* natural aspect for desktop; mobile adjusts below */
-      aspect-ratio: 4 / 3;
-      overflow: hidden;               /* crop happens here */
-      background:#fff;
+      height: 620px;                /* Visible area (tweak if you like) */
+      overflow: hidden;             /* Crop happens here */
+      background: #fff;
     }
-
-    /* Make the iframe taller and shift up by the crop amount so days aren’t cut */
+    /* Make iframe taller than the window, then shift it up by --crop */
     .cal-clip iframe{
-      position:absolute; inset:0;
-      width:100%;
+      position: absolute; inset: 0;
+      width: 100%;
       height: calc(100% + var(--crop));
-      border:0;
+      border: 0;
       transform: translateY(calc(-1 * var(--crop)));
     }
 
-    footer{
-      color:var(--sub);
-      font-size:14px;
-      text-align:center;
-      padding: 16px 8px;
-      margin-top: 16px;
+    /* Note row inside the card */
+    .cal-note{
+      font-size: 13px;
+      color: var(--sub);
+      padding: 10px 14px 12px;
       border-top: 1px dashed #f4e3ec;
+      text-align: center;
     }
-    footer span { color: var(--accent-ink); font-weight: 600; }
 
+    /* Button row (outside the card – your own link) */
+    .actions{
+      margin: 10px auto 0;
+      display: flex;
+      justify-content: center;
+    }
+    .btn{
+      appearance: none;
+      border: 1px solid #efcde0;
+      background: #fff;
+      color: var(--accent-ink);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all .18s ease;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    .btn:hover{
+      background: #fff6f9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0,0,0,.05);
+    }
+
+    /* Mobile */
     @media (max-width: 640px){
-      .cal-clip{ aspect-ratio: 1 / 1; }
-      :root{ --crop: 64px; } /* slightly larger crop on small screens */
+      .cal-clip{ height: 540px; }
+      :root{ --crop: 90px; } /* slightly more aggressive crop on small screens */
+      header{ grid-template-columns: 1fr; }
+      .legend{ justify-content: flex-start; }
     }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="dot" aria-hidden="true"></div>
+  <main class="wrap">
+    <section class="card">
+      <header>
         <div>
           <h1>Habibe Cakery Availability</h1>
           <p class="sub">Check our calendar before choosing your cake date ✨</p>
         </div>
-      </div>
 
-      <div class="legend">
-        <span class="chip"><span class="swatch" style="background:#ffffff"></span>Available</span>
-        <span class="chip"><span class="swatch" style="background:#f9dde3"></span>Fully booked</span>
-      </div>
-    </header>
+        <div class="legend" aria-label="Legend">
+          <span><span class="dot dot--avail" aria-hidden="true"></span>Available</span>
+          <span><span class="dot dot--full" aria-hidden="true"></span>Fully booked</span>
+        </div>
+      </header>
 
-    <section class="card">
-      <div class="cal-clip">
+      <!-- CROPPED CALENDAR -->
+      <div class="cal-clip" aria-label="Availability calendar">
+        <!-- ⬇️ REPLACE ONLY THE SRC IF YOU EVER UPDATE THE GOOGLE IFRAME -->
         <iframe
-          title="Habibe Cakery Availability Calendar"
-          loading="lazy"
-          src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&showCalendars=0&showTabs=0&showTz=0&showDate=1&showTitle=0&mode=MONTH&hl=en_GB&title=Habibe%20Cakery%20Availability&src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23f9dde3">
+          src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&showCalendars=0&showTabs=0&title=Habibe%20Cakery%20Availability&hl=en_GB&mode=MONTH&src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23f9dde3"
+          frameborder="0" scrolling="no" aria-label="Google Calendar embed">
         </iframe>
+      </div>
+
+      <!-- Your own note instead of Google’s footer -->
+      <div class="cal-note">
+        Pink dates = fully booked • White dates = available for new orders
       </div>
     </section>
 
-    <footer>
-       <span> Pink dates: fully booked | White dates:  available for new orders </span> 
-    </footer>
-  </div>
+    <!-- Optional: your own clean link to open the calendar (no Google footer needed) -->
+    <div class="actions">
+      <a
+        class="btn"
+        target="_blank" rel="noopener"
+        href="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&showCalendars=0&showTabs=0&title=Habibe%20Cakery%20Availability&hl=en_GB&mode=MONTH&src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23f9dde3">
+        Open in Google Calendar
+      </a>
+    </div>
+  </main>
 </body>
 </html>
