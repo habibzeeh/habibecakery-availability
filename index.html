@@ -1,192 +1,250 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Habibe Cakery • Availability</title>
-  <meta name="description" content="Habibe Cakery availability calendar. Updated daily." />
+  <title>Habibe Cakery Availability</title>
+  <meta name="description" content="Live availability calendar for Habibe Cakery." />
+
+  <!-- FullCalendar (CSS + JS via CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.11/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/multimonth@6.1.11/index.global.min.js"></script>
 
   <style>
     :root{
-      /* Brand + layout tokens */
-      --bg-1: #fff0f4;          /* subtle pink background wash */
-      --bg-2: #ffe9f0;          /* gradient stop */
-      --ink: #3a2a2f;           /* text */
-      --sub: #876c74;           /* secondary text */
-      --accent: #f7cfe0;        /* brand accent (light rose) */
-      --accent-ink: #c24d7a;    /* brand ink for highlights */
-      --card: #ffffff;          /* card surface */
+      --bg: #fff7fa;          /* soft pink page backdrop */
+      --card: #ffffff;        /* calendar card */
+      --ink: #2a2a2a;         /* text */
+      --sub: #6b6b6b;         /* subtext */
+      --brand: #f9dde3;       /* brand accent (light rose) */
+      --brand-ink:#b6036b;    /* darker rose (for emphasis) */
       --shadow: 0 10px 28px rgba(0,0,0,.07);
       --radius: 22px;
-
-      /* CROPPING (hides Google footer + timezone row) */
-      /* If you still see a sliver of the Google footer, increase this by 4–6px. */
-      --crop: 84px;
+      --border: 1px solid #f3dbe7;
     }
-
-    /* Base */
-    * { box-sizing: border-box; }
+    /* Page */
+    *{ box-sizing: border-box; }
     html, body { height: 100%; }
     body{
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-                   Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
-                   "Segoe UI Emoji", "Segoe UI Symbol";
+      margin:0;
+      font-family: ui-sans-serif, system-ui, Apple Color Emoji, Segoe UI, Roboto, Helvetica, Arial, Noto Sans;
       color: var(--ink);
       background:
-        radial-gradient(900px 700px at 92% -10%, #fff5fa 10%, transparent 60%),
-        radial-gradient(1200px 800px at -10% -10%, var(--bg-2) 10%, transparent 60%),
-        linear-gradient(180deg, var(--bg-1), #fff);
+        radial-gradient(1200px 800px at 90% -10%, #fff0e6 10%, transparent 60%),
+        radial-gradient(1000px 700px at -10% 110%, #ffeaf3 10%, transparent 55%),
+        var(--bg);
     }
 
+    /* Card wrapper */
     .wrap{
       max-width: 1080px;
-      margin: clamp(18px, 3vw, 38px) auto;
-      padding: clamp(14px, 2.4vw, 26px);
+      margin: clamp(16px, 3vw, 36px) auto;
+      padding: clamp(14px, 2.5vw, 28px);
     }
-
     .card{
       background: var(--card);
+      border: var(--border);
       border-radius: var(--radius);
-      border: 1px solid #f3dbe7;
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
     header{
-      padding: 26px clamp(18px, 3vw, 28px) 16px;
+      padding: 22px clamp(16px, 3vw, 28px);
+      display:flex; align-items:center; gap:16px;
+      justify-content: space-between; flex-wrap: wrap;
       border-bottom: 1px solid #f4e3ec;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px 16px;
-      align-items: center;
+      background: linear-gradient(180deg, #fff9fb 0%, #fff 100%);
     }
-    h1{
-      margin: 0;
-      font-size: clamp(18px, 3.2vw, 24px);
-      line-height: 1.25;
-      color: var(--ink);
+    .title{
+      font-size: clamp(18px, 2.1vw, 24px);
+      font-weight: 700;
+      color:#a60c64;
+      display:flex; align-items:center; gap:10px;
     }
-    .sub{
-      margin: 0;
-      grid-column: 1 / -1;
-      font-size: 14px;
+    .subtitle{
       color: var(--sub);
+      font-size: 14px;
+      margin-top: 2px;
     }
-
-    /* Legend */
     .legend{
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-size: 13px;
+      display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+      font-size: 13px; color:var(--sub);
     }
     .dot{
-      width: 10px; height: 10px; border-radius: 50%;
-      display: inline-block; vertical-align: middle; margin-right: 6px;
-      border: 1px solid rgba(0,0,0,.08);
+      display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px;
+      vertical-align: -1px;
     }
-    .dot--avail { background: #fff; }
-    .dot--full  { background: var(--accent); }
+    .dot-available{ background:#ffffff; border:1px solid #e9d2dc; }
+    .dot-booked{ background:#ffe3ee; border:1px solid #f2c1d4; }
 
-    /* CROPPED CALENDAR */
-    .cal-clip{
-      position: relative;
-      width: 100%;
-      height: 620px;                /* Visible area (tweak if you like) */
-      overflow: hidden;             /* Crop happens here */
-      background: #fff;
-    }
-    /* Make iframe taller than the window, then shift it up by --crop */
-    .cal-clip iframe{
-      position: absolute; inset: 0;
-      width: 100%;
-      height: calc(100% + var(--crop));
-      border: 0;
-      transform: translateY(calc(-1 * var(--crop)));
+    /* FullCalendar overrides */
+    .fc {
+      --fc-border-color: #f1e4eb;
+      --fc-page-bg-color: transparent;
+      --fc-neutral-bg-color: #fff;
+      --fc-today-bg-color: #fff8fb;
+      --fc-highlight-color: #fff1f7;
+      --fc-event-bg-color: #ffd1e4;        /* event pill bg */
+      --fc-event-border-color: #ffc3db;    /* event pill border */
+      --fc-event-text-color: #3a3141;      /* event text */
     }
 
-    /* Note row inside the card */
-    .cal-note{
-      font-size: 13px;
-      color: var(--sub);
-      padding: 10px 14px 12px;
-      border-top: 1px dashed #f4e3ec;
-      text-align: center;
+    .fc .fc-toolbar.fc-header-toolbar{
+      padding: 12px clamp(12px, 2.2vw, 20px);
+      border-bottom: 1px solid #f3e5ee;
+    }
+    .fc .fc-toolbar-title{
+      font-weight: 800;
+      color:#9b0b5c;
+      letter-spacing: .2px;
+    }
+    .fc .fc-button{
+      background: #ffe6f0;
+      border: 1px solid #f5cde0;
+      color:#7b0a4c;
+    }
+    .fc .fc-button-primary:not(:disabled).fc-button-active,
+    .fc .fc-button-primary:focus {
+      background:#ffdbea;
+      border-color:#f4c3d9;
+      box-shadow:none;
+      color:#7b0a4c;
     }
 
-    /* Button row (outside the card – your own link) */
-    .actions{
-      margin: 10px auto 0;
-      display: flex;
-      justify-content: center;
-    }
-    .btn{
-      appearance: none;
-      border: 1px solid #efcde0;
-      background: #fff;
-      color: var(--accent-ink);
-      border-radius: 999px;
-      padding: 10px 16px;
-      font-size: 14px;
-      text-decoration: none;
-      transition: all .18s ease;
-      box-shadow: 0 1px 0 rgba(0,0,0,.03);
-    }
-    .btn:hover{
-      background: #fff6f9;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(0,0,0,.05);
+    .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{
+      background:#ffeef6;
+      border-radius: 6px;
+      padding: 2px 6px;
     }
 
-    /* Mobile */
-    @media (max-width: 640px){
-      .cal-clip{ height: 540px; }
-      :root{ --crop: 90px; } /* slightly more aggressive crop on small screens */
-      header{ grid-template-columns: 1fr; }
-      .legend{ justify-content: flex-start; }
+    /* Make events pill-like and compact */
+    .fc .fc-daygrid-event{
+      border-radius:10px;
+      padding:2px 6px;
+      font-size:12px;
+      line-height:1.2;
     }
+
+    /* Footer note */
+    .note{
+      border-top: 1px dashed #f0d9e6;
+      text-align:center;
+      color:var(--sub);
+      font-size:13px;
+      padding: 12px;
+      background: linear-gradient(180deg, #fff 0%, #fff7fb 100%);
+    }
+
+    /* Hide FullCalendar watermark if it ever appears (normally it doesn’t on the CDN build) */
+    .fc-license-message{ display:none !important; }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="card">
+  <div class="wrap">
+    <div class="card">
       <header>
         <div>
-          <h1>Habibe Cakery Availability</h1>
-          <p class="sub">Check our calendar before choosing your cake date ✨</p>
+          <div class="title">🍰 Habibe Cakery Availability</div>
+          <div class="subtitle">Check our calendar before choosing your cake date ✨</div>
         </div>
 
         <div class="legend" aria-label="Legend">
-          <span><span class="dot dot--avail" aria-hidden="true"></span>Available</span>
-          <span><span class="dot dot--full" aria-hidden="true"></span>Fully booked</span>
+          <div><span class="dot dot-available"></span>Available</div>
+          <div><span class="dot dot-booked"></span>Booked</div>
         </div>
       </header>
 
-      <!-- CROPPED CALENDAR -->
-      <div class="cal-clip" aria-label="Availability calendar">
-        <!-- ⬇️ REPLACE ONLY THE SRC IF YOU EVER UPDATE THE GOOGLE IFRAME -->
-        <iframe
-          src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&showCalendars=0&showTabs=0&title=Habibe%20Cakery%20Availability&hl=en_GB&mode=MONTH&src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23f9dde3"
-          frameborder="0" scrolling="no" aria-label="Google Calendar embed">
-        </iframe>
-      </div>
+      <div id="calendar"></div>
 
-      <!-- Your own note instead of Google’s footer -->
-      <div class="cal-note">
-        Pink dates = fully booked • White dates = available for new orders
+      <div class="note">
+        <strong>Pink dates</strong> include bookings. If the day looks clear, we’re likely available for new orders.
       </div>
-    </section>
-
-    <!-- Optional: your own clean link to open the calendar (no Google footer needed) -->
-    <div class="actions">
-      <a
-        class="btn"
-        target="_blank" rel="noopener"
-        href="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FLondon&showPrint=0&showCalendars=0&showTabs=0&title=Habibe%20Cakery%20Availability&hl=en_GB&mode=MONTH&src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23f9dde3">
-        Open in Google Calendar
-      </a>
     </div>
-  </main>
+  </div>
+
+  <script>
+    // --------- CONFIG ---------
+    // Paste your PUBLIC iCal / ICS URL here (Google or Apple calendar).
+    // Google Calendar: Settings → Integrate calendar → "Public address in iCal format"
+    // Apple Calendar: right-click the calendar → Share → Public Calendar → Copy Link
+    const ICS_URL = 'YOUR_PUBLIC_ICS_URL_HERE';
+
+    // If you ever need the Google API route instead of ICS (CORS issues), see the fallback block below.
+    // --------------------------------
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('calendar');
+
+      // Build the calendar
+      const calendar = new FullCalendar.Calendar(el, {
+        plugins: [FullCalendar.icalendarPlugin, FullCalendar.multiMonthPlugin],
+        initialView: 'twoMonth',               // custom view defined below
+        firstDay: 1,                           // Monday
+        height: 'auto',
+        contentHeight: 'auto',
+        expandRows: true,
+
+        headerToolbar: {
+          left: 'title',
+          center: '',
+          right: 'prev,next'
+        },
+
+        // Two months side-by-side (uses the multimonth plugin)
+        views: {
+          twoMonth: {
+            type: 'multiMonth',
+            duration: { months: 2 },
+            multiMonthMaxColumns: 2,           // 2 columns
+            multiMonthMinWidth: 300            // helps stacking on mobile
+          }
+        },
+
+        // Pull events from your ICS feed
+        events: {
+          url: ICS_URL,
+          format: 'ics'                        // important for iCal plugin
+        },
+
+        // Nice UX
+        dayMaxEventRows: true,
+        fixedWeekCount: false,
+        navLinks: false,
+        displayEventTime: false,
+
+        // Optional: tweak how all-day bookings look
+        eventDidMount: (info) => {
+          // Make all-day events look like "background highlights" if you prefer:
+          // if (info.event.allDay) {
+          //   info.el.style.background = '#ffe3ee';
+          //   info.el.style.borderColor = '#f2c1d4';
+          // }
+        }
+      });
+
+      calendar.render();
+    });
+
+    /* ---------- FALLBACK (if your ICS URL is blocked by CORS) ----------
+       1) Create a Google API key (free) and restrict it to the Calendar API.
+       2) Set your public calendar’s Calendar ID.
+       3) Uncomment the block below and comment out the ICS "events" option above.
+       Docs: https://fullcalendar.io/docs/google-calendar
+    */
+
+    // const GCAL_API_KEY = 'YOUR_GOOGLE_API_KEY';
+    // const GCAL_CALENDAR_ID = 'yourcalendarid@group.calendar.google.com';
+    //
+    // const calendar = new FullCalendar.Calendar(el, {
+    //   plugins: [FullCalendar.googleCalendarPlugin, FullCalendar.multiMonthPlugin],
+    //   initialView: 'twoMonth',
+    //   headerToolbar: { left:'title', center:'', right:'prev,next' },
+    //   googleCalendarApiKey: GCAL_API_KEY,
+    //   events: { googleCalendarId: GCAL_CALENDAR_ID }
+    // });
+  </script>
 </body>
 </html>
