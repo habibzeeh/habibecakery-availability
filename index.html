@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!doctype html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Habibe Cakery • Availability&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="description" content="Habibe Cakery availability calendar." /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>:root{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--bg: #fff7fa;<span class="Apple-converted-space">            </span>/* soft pink backdrop */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--card: #ffffff;<span class="Apple-converted-space">          </span>/* calendar card */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--ink: #2a2a2a; <span class="Apple-converted-space">          </span>/* text */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--sub: #6b6b6b; <span class="Apple-converted-space">          </span>/* subtext */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--accent: #f7cfe0;<span class="Apple-converted-space">        </span>/* brand accent (light rose) */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--accent-ink: #b03b6b;<span class="Apple-converted-space">    </span>/* darker rose for emphasis */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--radius: 22px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--shadow: 0 10px 28px rgba(0,0,0,.07);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>html,body { height: 100%; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--ink);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background:</p>
+<p class="p1"><span class="Apple-converted-space">        </span>radial-gradient(1200px 800px at 90% -10%, #ffeef6 10%, transparent 60%),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>radial-gradient(1000px 700px at -10% 110%, #ffeaf3 10%, transparent 55%),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>var(--bg);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.wrap{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>max-width: 1080px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: clamp(16px, 3vw, 36px) auto;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: clamp(12px, 2.5vw, 24px);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--card);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: var(--radius);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: var(--shadow);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid #f3dbe7;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>header{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 28px clamp(18px, 3vw, 36px);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-bottom: 1px solid #f4e3ec;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap:16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.title{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; align-items:center; gap:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 700; letter-spacing:.2px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.title .badge{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:inline-grid; place-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width:38px; height:38px; border-radius:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--accent);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--accent-ink);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: inset 0 0 0 1px rgba(176,59,107,.15);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.note{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--sub);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: .95rem;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.bar{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px clamp(12px, 2.5vw, 24px);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(90deg, #fff3f8, #fff);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-top: 1px solid #f4e3ec;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-bottom: 1px solid #f4e3ec;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; gap:10px; align-items:center; flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #7a4a62;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: .95rem;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.dot { width:10px; height:10px; border-radius: 50%; background:#ffbcd1; display:inline-block; box-shadow: 0 0 0 2px #ffd9e6 inset; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.calendar {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>aspect-ratio: 16/11; /* responsive height */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>min-height: 560px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #fff;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.calendar iframe{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position:absolute; inset:0; width:100%; height:100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>footer{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 20px clamp(18px, 3vw, 36px) 28px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--sub);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: .9rem;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.btn{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--accent-ink);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid #f1cfe0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-decoration: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:inline-flex; align-items:center; gap:8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: .15s ease;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.btn:hover{ background:#fff5fa; border-color:#eeb7d0 }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;main class="wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;header&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="title"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="badge"&gt;🎂&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="font-size:1.25rem;"&gt;Habibe Cakery Availability&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="note"&gt;Check dates before submitting your enquiry ✨&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a class="btn" href="https://tally.so/r/wM9LDM" target="_blank" rel="noopener"&gt;Open Enquiry Form →&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="bar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;💡 Pink dates mean we’re fully booked. White dates are available for new cake orders.&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="calendar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- 👉 Replace the src= URL if you ever change calendars.</p>
+<p class="p1"><span class="Apple-converted-space">             </span>You can tweak parameters:</p>
+<p class="p1"><span class="Apple-converted-space">              </span>showPrint=0&amp;showCalendars=0&amp;showTabs=0</p>
+<p class="p1"><span class="Apple-converted-space">              </span>ctz=Europe%2FLondon</p>
+<p class="p1"><span class="Apple-converted-space">              </span>title=Habib%20Cakery</p>
+<p class="p1"><span class="Apple-converted-space">              </span>color=%23e67c73 (event color)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>--&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;iframe</p>
+<p class="p1"><span class="Apple-converted-space">          </span>src="https://calendar.google.com/calendar/embed?height=600&amp;wkst=1&amp;ctz=Europe%2FLondon&amp;showPrint=0&amp;showCalendars=0&amp;showTabs=0&amp;title=Habibe%20Cakery%20Availability&amp;src=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&amp;color=%23e67c73"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>loading="lazy"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>referrerpolicy="no-referrer-when-downgrade"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>aria-label="Habibe Cakery Availability Calendar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/iframe&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;footer&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span&gt;Timezone: Europe/London · Auto-updated from iCloud → Google&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a class="btn" href="https://calendar.google.com/calendar/u/0?cid=MTQwMmFuN3JscDVwdXQ0aGc3MWtidmcxcmdpNm0wYWlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20" target="_blank" rel="noopener"&gt;Add to Google Calendar&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/footer&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/main&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
