@@ -1,248 +1,159 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Habibe Cakery Availability</title>
-  <meta name="description" content="Live availability calendar for Habibe Cakery." />
+  <title>Habibe Cakery – Availability</title>
 
-  <!-- FullCalendar (CSS + JS via CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.11/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/multimonth@6.1.11/index.global.min.js"></script>
+  <!-- FullCalendar (core + daygrid + timegrid + list + icalendar plugin) -->
+  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
   <style>
     :root{
-      --bg: #fff7fa;          /* soft pink page backdrop */
-      --card: #ffffff;        /* calendar card */
-      --ink: #2a2a2a;         /* text */
-      --sub: #6b6b6b;         /* subtext */
-      --brand: #f9dde3;       /* brand accent (light rose) */
-      --brand-ink:#b6036b;    /* darker rose (for emphasis) */
-      --shadow: 0 10px 28px rgba(0,0,0,.07);
-      --radius: 22px;
-      --border: 1px solid #f3dbe7;
+      /* ---- Brand tweak here ---- */
+      --brand: #7A3E3E;         /* deep rose/brown */
+      --brand-ink: #2b2b2b;
+      --brand-accent: #F3E9E7;  /* blush background */
+      --brand-border: #e7d9d6;
     }
-    /* Page */
-    *{ box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, Apple Color Emoji, Segoe UI, Roboto, Helvetica, Arial, Noto Sans;
-      color: var(--ink);
-      background:
-        radial-gradient(1200px 800px at 90% -10%, #fff0e6 10%, transparent 60%),
-        radial-gradient(1000px 700px at -10% 110%, #ffeaf3 10%, transparent 55%),
-        var(--bg);
-    }
-
-    /* Card wrapper */
-    .wrap{
-      max-width: 1080px;
-      margin: clamp(16px, 3vw, 36px) auto;
-      padding: clamp(14px, 2.5vw, 28px);
-    }
-    .card{
-      background: var(--card);
-      border: var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    header{
-      padding: 22px clamp(16px, 3vw, 28px);
-      display:flex; align-items:center; gap:16px;
-      justify-content: space-between; flex-wrap: wrap;
-      border-bottom: 1px solid #f4e3ec;
-      background: linear-gradient(180deg, #fff9fb 0%, #fff 100%);
-    }
-    .title{
-      font-size: clamp(18px, 2.1vw, 24px);
-      font-weight: 700;
-      color:#a60c64;
-      display:flex; align-items:center; gap:10px;
-    }
-    .subtitle{
-      color: var(--sub);
-      font-size: 14px;
-      margin-top: 2px;
-    }
+    html,body{ margin:0; padding:0; background:#fff; color:var(--brand-ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:28px 16px 64px; }
+    header{ margin-bottom:18px; }
+    h1{ font-size:1.6rem; line-height:1.2; margin:0 0 6px; color:var(--brand); }
+    p.lede{ margin:0 0 14px; color:#555; }
     .legend{
-      display:flex; gap:14px; align-items:center; flex-wrap:wrap;
-      font-size: 13px; color:var(--sub);
+      display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+      border:1px solid var(--brand-border); padding:10px 12px; border-radius:12px; background:var(--brand-accent);
+      margin:12px 0 18px;
     }
-    .dot{
-      display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px;
-      vertical-align: -1px;
+    .key{ display:flex; gap:8px; align-items:center; font-size:0.9rem; color:#444; }
+    .dot{ width:12px; height:12px; border-radius:3px; background:var(--brand); opacity:.85; }
+    #calendar{
+      border:1px solid var(--brand-border);
+      border-radius:14px; overflow:hidden; background:#fff;
+      box-shadow:0 6px 18px rgba(0,0,0,.04);
     }
-    .dot-available{ background:#ffffff; border:1px solid #e9d2dc; }
-    .dot-booked{ background:#ffe3ee; border:1px solid #f2c1d4; }
-
-    /* FullCalendar overrides */
-    .fc {
-      --fc-border-color: #f1e4eb;
-      --fc-page-bg-color: transparent;
-      --fc-neutral-bg-color: #fff;
-      --fc-today-bg-color: #fff8fb;
-      --fc-highlight-color: #fff1f7;
-      --fc-event-bg-color: #ffd1e4;        /* event pill bg */
-      --fc-event-border-color: #ffc3db;    /* event pill border */
-      --fc-event-text-color: #3a3141;      /* event text */
+    .fc .fc-toolbar-title{ font-weight:700; color:var(--brand-ink); }
+    .fc .fc-button-primary{
+      background:var(--brand); border-color:var(--brand);
     }
-
-    .fc .fc-toolbar.fc-header-toolbar{
-      padding: 12px clamp(12px, 2.2vw, 20px);
-      border-bottom: 1px solid #f3e5ee;
+    .fc .fc-button-primary:not(:disabled):hover{
+      filter:brightness(0.9);
     }
-    .fc .fc-toolbar-title{
-      font-weight: 800;
-      color:#9b0b5c;
-      letter-spacing: .2px;
+    .fc .fc-col-header-cell-cushion{ padding:8px 0; }
+    .loading{
+      display:none; margin:10px 0 16px; font-size:.95rem; color:#666;
     }
-    .fc .fc-button{
-      background: #ffe6f0;
-      border: 1px solid #f5cde0;
-      color:#7b0a4c;
+    .loading.show{ display:block; }
+    footer{
+      margin-top:18px; font-size:.85rem; color:#777; text-align:center;
     }
-    .fc .fc-button-primary:not(:disabled).fc-button-active,
-    .fc .fc-button-primary:focus {
-      background:#ffdbea;
-      border-color:#f4c3d9;
-      box-shadow:none;
-      color:#7b0a4c;
+    .note{ font-size:.9rem; color:#666; margin-top:8px; }
+    @media (max-width: 640px){
+      .fc .fc-toolbar{ flex-wrap:wrap; gap:8px; }
     }
-
-    .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{
-      background:#ffeef6;
-      border-radius: 6px;
-      padding: 2px 6px;
-    }
-
-    /* Make events pill-like and compact */
-    .fc .fc-daygrid-event{
-      border-radius:10px;
-      padding:2px 6px;
-      font-size:12px;
-      line-height:1.2;
-    }
-
-    /* Footer note */
-    .note{
-      border-top: 1px dashed #f0d9e6;
-      text-align:center;
-      color:var(--sub);
-      font-size:13px;
-      padding: 12px;
-      background: linear-gradient(180deg, #fff 0%, #fff7fb 100%);
-    }
-
-    /* Hide FullCalendar watermark if it ever appears (normally it doesn’t on the CDN build) */
-    .fc-license-message{ display:none !important; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <header>
-        <div>
-          <div class="title">🍰 Habibe Cakery Availability</div>
-          <div class="subtitle">Check our calendar before choosing your cake date ✨</div>
-        </div>
-
-        <div class="legend" aria-label="Legend">
-          <div><span class="dot dot-available"></span>Available</div>
-          <div><span class="dot dot-booked"></span>Booked</div>
-        </div>
-      </header>
-
-      <div id="calendar"></div>
-
-      <div class="note">
-        <strong>Pink dates</strong> include bookings. If the day looks clear, we’re likely available for new orders.
+    <header>
+      <h1>Habibe Cakery — Availability</h1>
+      <p class="lede">Dates shown here reflect our latest schedule. If a date looks busy, send a quick enquiry — we sometimes can accommodate smaller orders.</p>
+      <div class="legend">
+        <div class="key"><span class="dot"></span>Booked/Busy</div>
+        <div class="key">Tap a date for more details (mobile: pinch/zoom)</div>
       </div>
-    </div>
+      <div class="loading" id="loading">Updating calendar…</div>
+    </header>
+
+    <div id="calendar"></div>
+
+    <p class="note">Times auto-adjust to your timezone. Calendar updates every few minutes from our private scheduling system.</p>
+    <footer>
+      © <span id="y"></span> Habibe Cakery · Birmingham & Northampton
+    </footer>
   </div>
 
   <script>
-    // --------- CONFIG ---------
-    // Paste your PUBLIC iCal / ICS URL here (Google or Apple calendar).
-    // Google Calendar: Settings → Integrate calendar → "Public address in iCal format"
-    // Apple Calendar: right-click the calendar → Share → Public Calendar → Copy Link
-    const ICS_URL = 'https://little-hall-b409.old-haze-fb81.workers.dev/';
+    // 1) Put your Worker ICS URL here (must return 'text/calendar' with CORS):
+    const ICS_URL = "ICS_URL_HERE"; // e.g. https://little-hall-b409.old-haze-fb81.workers.dev/
 
-  
-    document.addEventListener('DOMContentLoaded', () => {
-      const el = document.getElementById('calendar');
+    // Optional: short cache-buster to help GitHub Pages users see recent changes
+    function bust(url){ return url + (url.includes('?') ? '&' : '?') + 'cb=' + Math.floor(Date.now()/ (1000*60*5)); }
 
-      // Build the calendar
-      const calendar = new FullCalendar.Calendar(el, {
-        plugins: [FullCalendar.icalendarPlugin, FullCalendar.multiMonthPlugin],
-        initialView: 'twoMonth',               // custom view defined below
-        firstDay: 1,                           // Monday
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const loading = document.getElementById('loading');
+      const calendarEl = document.getElementById('calendar');
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        timeZone: 'Europe/London',
         height: 'auto',
-        contentHeight: 'auto',
-        expandRows: true,
-
+        initialView: 'dayGridMonth',
         headerToolbar: {
-          left: 'title',
-          center: '',
-          right: 'prev,next'
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listMonth'
+        },
+        buttonText: {
+          today: 'Today',
+          month: 'Month',
+          week: 'Week',
+          list: 'List'
+        },
+        firstDay: 1, // Monday
+        navLinks: true,
+        selectable: false,
+        nowIndicator: true,
+        displayEventTime: true,
+
+        // Subtle busy styling
+        eventDisplay: 'block',
+        eventBackgroundColor: getComputedStyle(document.documentElement)
+          .getPropertyValue('--brand').trim(),
+        eventBorderColor: getComputedStyle(document.documentElement)
+          .getPropertyValue('--brand').trim(),
+        eventTextColor: '#fff',
+
+        // Load ICS
+        plugins: [ FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.listPlugin, FullCalendar.icalendarPlugin ],
+        eventSources: [{
+          url: bust(ICS_URL),
+          format: 'ics'
+        }],
+
+        loading: function(isLoading) {
+          loading.classList.toggle('show', isLoading);
         },
 
-        // Two months side-by-side (uses the multimonth plugin)
-        views: {
-          twoMonth: {
-            type: 'multiMonth',
-            duration: { months: 2 },
-            multiMonthMaxColumns: 2,           // 2 columns
-            multiMonthMinWidth: 300            // helps stacking on mobile
-          }
+        // Optional niceties
+        eventClick: function(info){
+          // Copy event title & time to clipboard for quick replies
+          const e = info.event;
+          const when = e.allDay
+            ? e.start.toLocaleDateString()
+            : e.start.toLocaleString();
+          const text = `${e.title} — ${when}`;
+          navigator.clipboard?.writeText(text).catch(()=>{});
+          // Basic tooltip
+          alert(text);
         },
 
-        // Pull events from your ICS feed
-        events: {
-          url: ICS_URL,
-          format: 'ics'                        // important for iCal plugin
-        },
-
-        // Nice UX
-        dayMaxEventRows: true,
-        fixedWeekCount: false,
-        navLinks: false,
-        displayEventTime: false,
-
-        // Optional: tweak how all-day bookings look
-        eventDidMount: (info) => {
-          // Make all-day events look like "background highlights" if you prefer:
-          // if (info.event.allDay) {
-          //   info.el.style.background = '#ffe3ee';
-          //   info.el.style.borderColor = '#f2c1d4';
-          // }
+        // Only show this many months by default (avoid super heavy ICS)
+        visibleRange: function(currentDate) {
+          // allow default; we control size by default view
+          return null;
         }
       });
 
       calendar.render();
     });
-
-    /* ---------- FALLBACK (if your ICS URL is blocked by CORS) ----------
-       1) Create a Google API key (free) and restrict it to the Calendar API.
-       2) Set your public calendar’s Calendar ID.
-       3) Uncomment the block below and comment out the ICS "events" option above.
-       Docs: https://fullcalendar.io/docs/google-calendar
-    */
-
-    // const GCAL_API_KEY = 'YOUR_GOOGLE_API_KEY';
-    // const GCAL_CALENDAR_ID = 'yourcalendarid@group.calendar.google.com';
-    //
-    // const calendar = new FullCalendar.Calendar(el, {
-    //   plugins: [FullCalendar.googleCalendarPlugin, FullCalendar.multiMonthPlugin],
-    //   initialView: 'twoMonth',
-    //   headerToolbar: { left:'title', center:'', right:'prev,next' },
-    //   googleCalendarApiKey: GCAL_API_KEY,
-    //   events: { googleCalendarId: GCAL_CALENDAR_ID }
-    // });
   </script>
 </body>
 </html>
