@@ -5,83 +5,122 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- FullCalendar core JS (global bundle with dayGrid/timeGrid/list) -->
+  <!-- ✅ Correct FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/main.css" rel="stylesheet" />
+
+  <!-- ✅ FullCalendar global JS bundle -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
-  <!-- iCal parser FIRST, then the iCalendar plugin -->
+  <!-- ✅ iCal parser and iCalendar plugin -->
   <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
+  <!-- ✅ Optional: timeGrid/list views (included in main bundle but here for safety) -->
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.15/index.global.min.js"></script>
+
   <style>
-    :root { --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadede; --text:#2b2b2b; }
-    body{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;margin:0;padding:32px 16px;background:#fff;color:var(--text)}
-    h1{color:var(--brand);text-align:center;margin-bottom:24px;border-bottom:2px solid var(--accent);padding-bottom:6px;font-size:1.8rem;letter-spacing:.5px}
-    #calendar{max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:640px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
-    .error{color:#b00020;text-align:center;margin-top:12px;font-weight:600}
-  </style>
-
-  <script>
-    // Try multiple CSS URLs until one returns 200 (handles CDN/path/caching quirks)
-    const FC_CSS_CANDIDATES = [
-      'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css',
-      'https://unpkg.com/fullcalendar@6.1.15/index.global.min.css',
-      'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css',
-      'https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/main.min.css'
-    ];
-
-    function loadCssSequentially(urls) {
-      return new Promise((resolve, reject) => {
-        const tryNext = (i) => {
-          if (i >= urls.length) return reject(new Error('All FullCalendar CSS URLs failed.'));
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = urls[i] + '?cb=' + Date.now(); // cache-bust
-          link.onload = () => resolve(link.href);
-          link.onerror = () => {
-            console.warn('CSS failed:', urls[i]);
-            tryNext(i + 1);
-          };
-          document.head.appendChild(link);
-        };
-        tryNext(0);
-      });
+    :root {
+      --brand: #7A3E3E;
+      --accent: #F3E9E7;
+      --border: #eadede;
+      --text: #2b2b2b;
     }
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const loadedCss = await loadCssSequentially(FC_CSS_CANDIDATES);
-        console.log('FullCalendar CSS loaded:', loadedCss);
-      } catch (e) {
-        console.error(e);
-      }
+    body {
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+      background: #fff;
+      color: var(--text);
+      margin: 0;
+      padding: 32px 16px;
+    }
 
+    h1 {
+      color: var(--brand);
+      text-align: center;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 6px;
+      font-size: 1.8rem;
+      letter-spacing: .5px;
+    }
+
+    #calendar {
+      max-width: 1100px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      min-height: 640px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .05);
+    }
+
+    .fc .fc-toolbar-title {
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .fc .fc-button-primary {
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .fc .fc-button-primary:hover {
+      filter: brightness(.9);
+    }
+
+    .error {
+      color: #b00020;
+      text-align: center;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Habibe Cakery — Availability</h1>
+  <div id="calendar"></div>
+  <p id="err" class="error" hidden>Calendar plugin failed to load. Please refresh.</p>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
       const fc = window.FullCalendar;
-      // Safari sometimes exposes the plugin under different globals; capture any of them
       const icalPlugin =
         (window.FullCalendarIcalendar && window.FullCalendarIcalendar.icalendarPlugin) ||
         (fc && fc.icalendarPlugin) ||
         window.icalendarPlugin;
 
+      // ✅ Check that all required parts are available
       if (!fc || !fc.Calendar || !fc.dayGridPlugin || !icalPlugin) {
         console.error('Plugins missing', { fc, icalPlugin });
-        const p = document.getElementById('err');
-        if (p) p.hidden = false;
+        document.getElementById('err').hidden = false;
         return;
       }
 
+      // ✅ Initialize the calendar
       const calendar = new fc.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
         initialView: 'dayGridMonth',
+        height: 'auto',
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,listMonth'
         },
+        buttonText: {
+          today: 'Today',
+          month: 'Month',
+          week: 'Week',
+          list: 'List'
+        },
         firstDay: 1,
         nowIndicator: true,
-        plugins: [ fc.dayGridPlugin, fc.timeGridPlugin, fc.listPlugin, icalPlugin ],
+        plugins: [fc.dayGridPlugin, fc.timeGridPlugin, fc.listPlugin, icalPlugin],
         eventSources: [
-          { url: 'https://ics.habibecakery.co', format: 'ics' }  // your Worker that proxies iCloud ICS
+          {
+            url: 'https://ics.habibecakery.co', // Your iCloud calendar via Cloudflare Worker
+            format: 'ics'
+          }
         ],
         eventBackgroundColor: '#7A3E3E',
         eventBorderColor: '#7A3E3E',
@@ -92,10 +131,5 @@
       calendar.render();
     });
   </script>
-</head>
-<body>
-  <h1>Habibe Cakery — Availability</h1>
-  <div id="calendar"></div>
-  <p id="err" class="error" hidden>Calendar plugin failed to load. Please refresh.</p>
 </body>
 </html>
