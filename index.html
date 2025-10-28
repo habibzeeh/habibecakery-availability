@@ -5,22 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- One-bundle FullCalendar (CSS + JS) -->
+  <!-- FullCalendar (single bundle = stable CSS/JS paths) -->
   <link href="https://unpkg.com/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
   <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
 
-  <!-- iCal support (ical.js + icalendar plugin) -->
-  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
+  <!-- iCal support (load ical.js FIRST, then the FC plugin) -->
+  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
   <style>
     :root { --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadede; --text:#2b2b2b; }
-    body{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-         background:#fff;color:var(--text);margin:0;padding:32px 16px;}
-    h1{color:var(--brand);text-align:center;margin-bottom:24px;border-bottom:2px solid var(--accent);
-       padding-bottom:6px;font-size:1.8rem;letter-spacing:.5px;}
-    #calendar{max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:14px;
-              overflow:hidden;min-height:640px;box-shadow:0 6px 18px rgba(0,0,0,.05);}
+    body{
+      font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+      background:#fff;color:var(--text);margin:0;padding:32px 16px;
+    }
+    h1{
+      color:var(--brand);text-align:center;margin-bottom:24px;border-bottom:2px solid var(--accent);
+      padding-bottom:6px;font-size:1.8rem;letter-spacing:.5px;
+    }
+    #calendar{
+      max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:14px;
+      overflow:hidden;min-height:640px;box-shadow:0 6px 18px rgba(0,0,0,.05);
+    }
     .fc .fc-toolbar-title{font-weight:600;color:var(--brand);}
     .fc .fc-button-primary{background:var(--brand);border-color:var(--brand);}
     .fc .fc-button-primary:hover{filter:brightness(.9);}
@@ -34,6 +40,22 @@
     document.addEventListener('DOMContentLoaded', () => {
       const ICS_URL = "https://ics.habibecakery.co"; // your Worker URL
 
+      // Detect the iCalendar plugin regardless of the global name the CDN exposes
+      const icalPlugin =
+        (window.FullCalendarIcalendar && window.FullCalendarIcalendar.icalendarPlugin) ||
+        window.icalendarPlugin ||
+        (window.FullCalendar && window.FullCalendar.icalendarPlugin);
+
+      if (!icalPlugin) {
+        console.error('FullCalendar iCalendar plugin did not load.');
+        const msg = document.createElement('p');
+        msg.style.textAlign = 'center';
+        msg.style.color = '#b00020';
+        msg.textContent = 'Calendar plugin failed to load. Please refresh.';
+        document.getElementById('calendar').appendChild(msg);
+        return;
+      }
+
       const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
         initialView: 'dayGridMonth',
@@ -44,16 +66,17 @@
         nowIndicator: true,
         eventDisplay: 'block',
 
-        // Use plugin globals from the single bundle:
+        // Plugins from the single bundle + detected iCal plugin
         plugins: [
           FullCalendar.dayGridPlugin,
           FullCalendar.timeGridPlugin,
           FullCalendar.listPlugin,
-          icalendarPlugin
+          icalPlugin
         ],
 
+        // Load events from your iCloud ICS feed (via Worker)
         eventSources: [{
-          url: ICS_URL + '?cb=' + Math.floor(Date.now() / (1000*60*5)),
+          url: ICS_URL + '?cb=' + Math.floor(Date.now() / (1000 * 60 * 5)), // cache-bust every 5 mins
           format: 'ics'
         }],
 
