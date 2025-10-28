@@ -5,92 +5,63 @@ document.addEventListener('DOMContentLoaded', () => {
     timeZone: 'Europe/London',
     initialView: 'dayGridMonth',
     headerToolbar: {
-      left: 'prev,next',     // no Today
-      center: 'title',       // we'll replace with pickers
-      right: ''              // no Month/Week
+      left: 'prev,next',  // clean: only arrows
+      center: 'title',    // we won't use it; replaced by our combo select
+      right: ''           // no Month/Week
     },
     eventSources: [
       { url: 'https://ics.habibecakery.co', format: 'ics' }
     ],
-    datesSet: () => syncPickers(cal)
+    datesSet: () => syncCombo(cal)
   });
 
   cal.render();
-  injectPickers(cal);
+  injectCombo(cal);
 });
 
-/* ---------------- Helpers ---------------- */
+/* ---------- Helpers ---------- */
 
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-function injectPickers(cal){
+function injectCombo(cal){
+  // We’ll mount the combo next to the left nav arrows
+  const left = document.querySelector('.fc .fc-toolbar.fc-header-toolbar .fc-toolbar-chunk:first-child');
   const center = document.querySelector('.fc .fc-toolbar.fc-header-toolbar .fc-toolbar-chunk:nth-child(2)');
-  if(!center) return;
-  center.innerHTML = '';
+  if (!left) return;
 
-  // Desktop: Month + Year selects
-  const wrap = document.createElement('div');
-  wrap.className = 'hc-monthpicker';
+  // Clear the native title entirely
+  if (center) center.innerHTML = '';
 
-  const monthSel = document.createElement('select');
-  monthSel.className = 'hc-select hc-select-month';
-  MONTH_NAMES.forEach((name, i) => {
-    const opt = document.createElement('option');
-    opt.value = i; opt.textContent = name;
-    monthSel.appendChild(opt);
-  });
-
-  const yearSel = document.createElement('select');
-  yearSel.className = 'hc-select hc-select-year';
-  const currentYear = new Date().getFullYear();
-  for(let y = currentYear - 1; y <= currentYear + 2; y++){
-    const opt = document.createElement('option');
-    opt.value = y; opt.textContent = y;
-    yearSel.appendChild(opt);
-  }
-
-  monthSel.addEventListener('change', () => {
-    cal.gotoDate(new Date(parseInt(yearSel.value,10), parseInt(monthSel.value,10), 1));
-  });
-  yearSel.addEventListener('change', () => {
-    cal.gotoDate(new Date(parseInt(yearSel.value,10), parseInt(monthSel.value,10), 1));
-  });
-
-  wrap.appendChild(monthSel);
-  wrap.appendChild(yearSel);
-  center.appendChild(wrap);
-
-  // Mobile: single combined select "Mon YYYY"
+  // Single combined select: "Mon YYYY"
   const combo = document.createElement('select');
   combo.className = 'hc-select hc-select-combo';
+
+  const currentYear = new Date().getFullYear();
   const start = new Date(currentYear - 1, 0, 1);
-  for(let i = 0; i < 36; i++){
+  for (let i = 0; i < 36; i++) {
     const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
     const opt = document.createElement('option');
     opt.value = `${d.getFullYear()}-${d.getMonth()}`;
     opt.textContent = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
     combo.appendChild(opt);
   }
+
   combo.addEventListener('change', () => {
     const [y, m] = combo.value.split('-').map(v => parseInt(v, 10));
     cal.gotoDate(new Date(y, m, 1));
   });
-  center.appendChild(combo);
+
+  // Put the combo directly after the next button
+  left.appendChild(combo);
 
   // Initial sync
-  syncPickers(cal);
+  syncCombo(cal);
 }
 
-function syncPickers(cal){
+function syncCombo(cal){
   const d = cal.getDate();
   const m = d.getMonth();
   const y = d.getFullYear();
-
-  const monthSel = document.querySelector('.hc-select-month');
-  const yearSel  = document.querySelector('.hc-select-year');
-  const combo    = document.querySelector('.hc-select-combo');
-
-  if(monthSel) monthSel.value = String(m);
-  if(yearSel)  yearSel.value  = String(y);
-  if(combo)    combo.value    = `${y}-${m}`;
+  const combo = document.querySelector('.hc-select-combo');
+  if (combo) combo.value = `${y}-${m}`;
 }
