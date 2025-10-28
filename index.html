@@ -37,18 +37,20 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const ICS_URL = "https://ics.habibecakery.co"; // your Worker URL
-
-      // Use the plugin objects exposed by the single bundle + icalendar plugin script
+      
       const fc = window.FullCalendar;
       const calendar = new fc.Calendar(document.getElementById('calendar'), {
-        
-          initialView: 'dayGridMonth',
-          plugins: [ fc.dayGridPlugin, fc.icalendarPlugin ],
-          events: { url: 'https://ics.habibecakery.co', format: 'ics' }
-        });
-        
-      calendar.render();
+        initialView: 'dayGridMonth',
+        plugins: [ fc.dayGridPlugin, fc.icalendarPlugin ],
+        eventSources: [
+          {
+            url: 'https://ics.habibecakery.co', // your Cloudflare Worker endpoint
+            format: 'ics'
+          }
+        ]
+      });
+    
+    calendar.render();
 
       const calendar = new fc.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
