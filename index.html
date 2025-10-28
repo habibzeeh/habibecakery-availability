@@ -1,37 +1,212 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- No CSS links needed in v6: CSS is injected by JS -->
-
-  <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
+  <!-- FullCalendar global CSS (works well with UNPKG) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/fullcalendar@6.1.15/index.global.min.css"
+  />
 
   <style>
-    :root { --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadede; --text:#2b2b2b; }
-    body{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;margin:0;padding:32px 16px}
-    h1{color:var(--brand);text-align:center;margin-bottom:24px;border-bottom:2px solid var(--accent);padding-bottom:6px}
-    #calendar{max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:640px}
+    :root {
+      --brand: #7A3E3E;
+      --accent: #F3E9E7;
+      --border: #eadee0;
+      --text: #2b2b2b;
+    }
+
+    body {
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+      background: #fff;
+      color: var(--text);
+      margin: 0;
+      padding: 32px 16px;
+    }
+
+    h1 {
+      color: var(--brand);
+      text-align: center;
+      margin: 0 0 24px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--accent);
+      letter-spacing: .5px;
+      font-size: 1.9rem;
+      font-weight: 700;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      margin: 0 0 10px 2px;
+      color: #5a5a5a;
+      font-size: 14px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 12px; height: 12px; border-radius: 999px; display: inline-block;
+      border: 1px solid #bbb; background: #fff;
+    }
+    .dot.booked { background: #ffd7e2; border-color: #ffc3d4; }
+
+    #calendar {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      min-height: 640px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    }
+
+    /* Brand the toolbar a little */
+    .fc .fc-toolbar-title { color: var(--brand); font-weight: 700; }
+    .fc .fc-button-primary { background: var(--brand); border-color: var(--brand); }
+    .fc .fc-button-primary:hover { filter: brightness(.9); }
+
+    /* Hide the small “12p” label on month view events */
+    .fc .fc-daygrid-event .fc-event-time { display: none; }
+
+    /* Capacity visuals */
+    .cap-badge{
+      position:absolute; right:4px; top:4px;
+      font-size:11px; line-height:1; padding:3px 6px; border-radius:10px;
+      background:#e8e8e8; color:#333;
+    }
+    .fc-daygrid-day.fully-booked{
+      background:#f8f0f0;
+    }
+    .fc-daygrid-day.fully-booked .fc-daygrid-day-number{
+      color:#b00020; font-weight:700;
+    }
+    .fc-daygrid-day.fully-booked .cap-badge{
+      background:#b00020; color:#fff;
+    }
   </style>
 </head>
 <body>
-  <h1>Habibe Cakery — Availability</h1>
-  <div id="calendar"></div>
+  <div class="wrap">
+    <h1>Habibe Cakery — Availability</h1>
+
+    <!-- optional legend, matches “Available / Fully booked” idea -->
+    <div class="legend">
+      <span class="chip"><span class="dot"></span> Available</span>
+      <span class="chip"><span class="dot booked"></span> Fully booked</span>
+    </div>
+
+    <div id="calendar"></div>
+  </div>
+
+  <!-- Order matters: ical.js first, then FullCalendar + plugins -->
+  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
+  <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/list@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
   <script>
+    // ======================
+    // CONFIG — EDIT THESE
+    // ======================
+    const ICS_URL = 'https://ics.habibecakery.co'; // your Worker URL (or workers.dev while testing)
+    const DAILY_LIMIT = 5; // how many orders per day
+    const BLOCK_TITLES = ['unavailable', 'blocked', 'fully booked']; // all-day “hard blocked” markers
+
     document.addEventListener('DOMContentLoaded', () => {
       const fc = window.FullCalendar;
-      const cal = new fc.Calendar(document.getElementById('calendar'), {
+
+      const calendar = new fc.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
         initialView: 'dayGridMonth',
-        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
-        eventSources: [{ url: 'https://ics.habibecakery.co', format: 'ics' }]
+        height: 'auto',
+        firstDay: 1,
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listMonth'
+        },
+        buttonText: { today:'Today', month:'Month', week:'Week', list:'List' },
+        navLinks: true,
+        dayMaxEventRows: true,
+        displayEventTime: false, // hide tiny time on month view
+
+        plugins: [
+          fc.dayGridPlugin,
+          fc.timeGridPlugin,
+          fc.listPlugin,
+          fc.icalendarPlugin
+        ],
+
+        eventSources: [{
+          url: ICS_URL,
+          format: 'ics',
+          // small cache-bust to avoid stale ICS in CDNs
+          extraParams: { _cb: () => Date.now() }
+        }],
+
+        // Style all-day "Unavailable" / "Fully booked" events if you use them
+        eventClassNames(arg) {
+          const title = (arg.event.title || '').toLowerCase();
+          if (arg.event.allDay && BLOCK_TITLES.some(t => title.includes(t))) {
+            return ['is-blocked-day'];
+          }
+          return [];
+        }
       });
-      cal.render();
+
+      calendar.render();
+
+      // ====== Capacity overlay ======
+      function dateKey(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const da = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${da}`;
+      }
+
+      calendar.setOption('eventsSet', (events) => {
+        const counts = {};
+
+        // Count timed + all-day orders; skip explicit blocked days
+        for (const ev of events) {
+          const title = (ev.title || '').toLowerCase();
+          if (ev.allDay && BLOCK_TITLES.some(t => title.includes(t))) continue;
+
+          const k = dateKey(ev.start);
+          counts[k] = (counts[k] || 0) + 1;
+        }
+
+        // Update each cell: badge + fully-booked styling
+        document.querySelectorAll('.fc-daygrid-day').forEach(cell => {
+          const k = cell.getAttribute('data-date');
+          const used = counts[k] || 0;
+
+          cell.classList.toggle('fully-booked', used >= DAILY_LIMIT);
+
+          let badge = cell.querySelector('.cap-badge');
+          if (!badge) {
+            badge = document.createElement('div');
+            badge.className = 'cap-badge';
+            cell.appendChild(badge);
+          }
+          badge.textContent = used ? `${Math.min(used, DAILY_LIMIT)}/${DAILY_LIMIT}` : '';
+        });
+      });
     });
   </script>
 </body>
