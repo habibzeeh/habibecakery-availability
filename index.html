@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- ✅ CSS (per-package, correct filenames are index.css) -->
-  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.15/index.css" rel="stylesheet" />
+  <!-- ✅ Correct CSS (use UNPKG; jsDelivr URLs for these were 404 in your logs) -->
+  <link href="https://unpkg.com/@fullcalendar/core@6.1.15/index.css" rel="stylesheet" />
+  <link href="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.css" rel="stylesheet" />
+  <link href="https://unpkg.com/@fullcalendar/timegrid@6.1.15/index.css" rel="stylesheet" />
+  <link href="https://unpkg.com/@fullcalendar/list@6.1.15/index.css" rel="stylesheet" />
 
-  <!-- ✅ JS (global builds) -->
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.15/index.global.min.js"></script>
+  <!-- ✅ FullCalendar JS (global builds) -->
+  <script src="https://unpkg.com/@fullcalendar/core@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/list@6.1.15/index.global.min.js"></script>
 
-  <!-- ✅ iCal parser + FullCalendar iCalendar plugin -->
-  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
+  <!-- ✅ iCal parser + iCalendar plugin (MUST include the plugin; it was missing in your network list) -->
+  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
   <style>
     :root { --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadede; --text:#2b2b2b; }
@@ -41,7 +41,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const fc = window.FullCalendar;
 
-      // Safari sometimes exposes iCalendar differently; grab any of the globals
+      // iCalendar plugin can live under different globals depending on build/CDN
       const icalPlugin =
         (window.FullCalendarIcalendar && window.FullCalendarIcalendar.icalendarPlugin) ||
         (fc && fc.icalendarPlugin) ||
@@ -65,7 +65,7 @@
         nowIndicator: true,
         plugins: [ fc.dayGrid, fc.timeGrid, fc.list, icalPlugin ],
         eventSources: [
-          { url: 'https://ics.habibecakery.co', format: 'ics' } // your Worker proxy to iCloud
+          { url: 'https://ics.habibecakery.co', format: 'ics' } // Cloudflare Worker → iCloud ICS
         ],
         eventBackgroundColor: '#7A3E3E',
         eventBorderColor: '#7A3E3E',
