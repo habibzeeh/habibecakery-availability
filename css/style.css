@@ -1,10 +1,10 @@
 :root {
   --brand:#7A3E3E;
-  --accent:#FCEEF0;      /* soft pink background */
+  --accent:#FCEEF0;     
   --border:#eadede;
   --text:#2b2b2b;
-  --ok:#ffffff;          /* available = white */
-  --full:#d81b60;        /* fully booked = pink */
+  --ok:#ffffff;          
+  --full:#d81b60;        
 
   /* FullCalendar theme vars */
   --fc-border-color: var(--border);
