@@ -5,105 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- FullCalendar core CSS -->
-  <link href="https://unpkg.com/@fullcalendar/core@6.1.15/index.global.css" rel="stylesheet" />
-  
-  <!-- FullCalendar core + plugins -->
-  <script src="https://unpkg.com/@fullcalendar/core@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/list@6.1.15/index.global.min.js"></script>
-  
-  <!-- iCal support -->
+  <!-- One-bundle FullCalendar (CSS + JS) -->
+  <link href="https://unpkg.com/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
+
+  <!-- iCal support (ical.js + icalendar plugin) -->
   <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
   <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
-
-
-  <!-- Styling -->
   <style>
-    :root {
-      --brand: #7A3E3E;
-      --accent: #F3E9E7;
-      --border: #eadede;
-      --text: #2b2b2b;
-    }
-
-    body {
-      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: #fff;
-      color: var(--text);
-      margin: 0;
-      padding: 32px 16px;
-    }
-
-    h1 {
-      color: var(--brand);
-      text-align: center;
-      margin-bottom: 24px;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 6px;
-      font-size: 1.8rem;
-      letter-spacing: 0.5px;
-    }
-
-    #calendar {
-      max-width: 1100px;
-      margin: 0 auto;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      min-height: 640px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-    }
-
-    .fc .fc-toolbar-title {
-      font-weight: 600;
-      color: var(--brand);
-    }
-
-    .fc .fc-button-primary {
-      background: var(--brand);
-      border-color: var(--brand);
-    }
-
-    .fc .fc-button-primary:hover {
-      filter: brightness(0.9);
-    }
+    :root { --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadede; --text:#2b2b2b; }
+    body{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+         background:#fff;color:var(--text);margin:0;padding:32px 16px;}
+    h1{color:var(--brand);text-align:center;margin-bottom:24px;border-bottom:2px solid var(--accent);
+       padding-bottom:6px;font-size:1.8rem;letter-spacing:.5px;}
+    #calendar{max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:14px;
+              overflow:hidden;min-height:640px;box-shadow:0 6px 18px rgba(0,0,0,.05);}
+    .fc .fc-toolbar-title{font-weight:600;color:var(--brand);}
+    .fc .fc-button-primary{background:var(--brand);border-color:var(--brand);}
+    .fc .fc-button-primary:hover{filter:brightness(.9);}
   </style>
 </head>
-
 <body>
   <h1>Habibe Cakery — Availability</h1>
   <div id="calendar"></div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const ICS_URL = "https://ics.habibecakery.co"; // your worker URL
+    document.addEventListener('DOMContentLoaded', () => {
+      const ICS_URL = "https://ics.habibecakery.co"; // your Worker URL
 
       const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
         initialView: 'dayGridMonth',
         height: 'auto',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listMonth'
-        },
-        buttonText: {
-          today: 'Today',
-          month: 'Month',
-          week: 'Week',
-          list: 'List'
-        },
+        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
+        buttonText: { today:'Today', month:'Month', week:'Week', list:'List' },
         firstDay: 1,
         nowIndicator: true,
         eventDisplay: 'block',
 
-        // Load events from your iCloud ICS feed (via Worker)
-        plugins: [dayGridPlugin, timeGridPlugin, listPlugin, icalendarPlugin],
+        // Use plugin globals from the single bundle:
+        plugins: [
+          FullCalendar.dayGridPlugin,
+          FullCalendar.timeGridPlugin,
+          FullCalendar.listPlugin,
+          icalendarPlugin
+        ],
+
         eventSources: [{
-          url: ICS_URL + '?cachebust=' + Math.floor(Date.now() / (1000 * 60 * 5)),
+          url: ICS_URL + '?cb=' + Math.floor(Date.now() / (1000*60*5)),
           format: 'ics'
         }],
 
