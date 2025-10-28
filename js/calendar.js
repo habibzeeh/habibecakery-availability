@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     timeZone: 'Europe/London',
     initialView: 'dayGridMonth',
     headerToolbar: {
-      left: 'prev,next',   // no Today
-      center: 'title',     // we’ll replace with pickers
-      right: ''            // no Month/Week
+      left: 'prev,next',   // arrows only
+      center: 'title',     // we'll replace with month/year textlike pickers
+      right: ''            // no view buttons
     },
     eventSources: [
       { url: 'https://ics.habibecakery.co', format: 'ics' }
@@ -29,13 +29,11 @@ function injectPickers(cal){
 
   const leftChunk   = chunks[0]; // arrows
   const centerChunk = chunks[1]; // native title area
+  centerChunk.innerHTML = '';    // remove native title entirely
 
-  // Clear native title and any previous contents
-  centerChunk.innerHTML = '';
-
-  // --- Desktop pickers: MONTH + YEAR, styled to look like "Oct 2025 ▾"
+  // Desktop + Mobile: SAME UI → Month + Year (textlike) right after arrows
   const wrap = document.createElement('div');
-  wrap.className = 'hc-monthpicker hc-monthpicker--desktop';
+  wrap.className = 'hc-monthpicker';
 
   const monthSel = document.createElement('select');
   monthSel.className = 'hc-select hc-select-month textlike';
@@ -46,7 +44,7 @@ function injectPickers(cal){
   });
 
   const yearSel = document.createElement('select');
-  yearSel.className = 'hc-select hc-select-year textlike caret'; // only this shows a caret
+  yearSel.className = 'hc-select hc-select-year textlike caret'; // only year shows caret
   const currentYear = new Date().getFullYear();
   for(let y = currentYear - 1; y <= currentYear + 2; y++){
     const opt = document.createElement('option');
@@ -63,28 +61,8 @@ function injectPickers(cal){
 
   wrap.appendChild(monthSel);
   wrap.appendChild(yearSel);
-
-  // Insert the desktop pickers **right after** the arrows in the LEFT chunk
   leftChunk.appendChild(wrap);
 
-  // --- Mobile: single compact combo in the center
-  const combo = document.createElement('select');
-  combo.className = 'hc-select hc-select-combo';
-  const start = new Date(currentYear - 1, 0, 1);
-  for(let i = 0; i < 36; i++){
-    const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
-    const opt = document.createElement('option');
-    opt.value = `${d.getFullYear()}-${d.getMonth()}`;
-    opt.textContent = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
-    combo.appendChild(opt);
-  }
-  combo.addEventListener('change', () => {
-    const [y, m] = combo.value.split('-').map(v => parseInt(v, 10));
-    cal.gotoDate(new Date(y, m, 1));
-  });
-  centerChunk.appendChild(combo);
-
-  // Initial sync
   syncPickers(cal);
 }
 
@@ -95,9 +73,7 @@ function syncPickers(cal){
 
   const monthSel = document.querySelector('.hc-select-month');
   const yearSel  = document.querySelector('.hc-select-year');
-  const combo    = document.querySelector('.hc-select-combo');
 
   if(monthSel) monthSel.value = String(m);
   if(yearSel)  yearSel.value  = String(y);
-  if(combo)    combo.value    = `${y}-${m}`;
 }
