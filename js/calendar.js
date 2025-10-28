@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,listMonth'
+      right: 'dayGridMonth,timeGridWeek' 
     },
     eventSources: [
       {
