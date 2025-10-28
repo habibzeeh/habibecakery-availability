@@ -1,158 +1,42 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Habibe Cakery – Availability</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Habibe Cakery — Availability</title>
 
-  <!-- FullCalendar (core + daygrid + timegrid + list + icalendar plugin) -->
   <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.15/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
-
   <style>
-    :root{
-      /* ---- Brand tweak here ---- */
-      --brand: #7A3E3E;         /* deep rose/brown */
-      --brand-ink: #2b2b2b;
-      --brand-accent: #F3E9E7;  /* blush background */
-      --brand-border: #e7d9d6;
-    }
-    html,body{ margin:0; padding:0; background:#fff; color:var(--brand-ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
-    .wrap{ max-width:1100px; margin:0 auto; padding:28px 16px 64px; }
-    header{ margin-bottom:18px; }
-    h1{ font-size:1.6rem; line-height:1.2; margin:0 0 6px; color:var(--brand); }
-    p.lede{ margin:0 0 14px; color:#555; }
-    .legend{
-      display:flex; gap:16px; align-items:center; flex-wrap:wrap;
-      border:1px solid var(--brand-border); padding:10px 12px; border-radius:12px; background:var(--brand-accent);
-      margin:12px 0 18px;
-    }
-    .key{ display:flex; gap:8px; align-items:center; font-size:0.9rem; color:#444; }
-    .dot{ width:12px; height:12px; border-radius:3px; background:var(--brand); opacity:.85; }
-    #calendar{
-      border:1px solid var(--brand-border);
-      border-radius:14px; overflow:hidden; background:#fff;
-      box-shadow:0 6px 18px rgba(0,0,0,.04);
-    }
-    .fc .fc-toolbar-title{ font-weight:700; color:var(--brand-ink); }
-    .fc .fc-button-primary{
-      background:var(--brand); border-color:var(--brand);
-    }
-    .fc .fc-button-primary:not(:disabled):hover{
-      filter:brightness(0.9);
-    }
-    .fc .fc-col-header-cell-cushion{ padding:8px 0; }
-    .loading{
-      display:none; margin:10px 0 16px; font-size:.95rem; color:#666;
-    }
-    .loading.show{ display:block; }
-    footer{
-      margin-top:18px; font-size:.85rem; color:#777; text-align:center;
-    }
-    .note{ font-size:.9rem; color:#666; margin-top:8px; }
-    @media (max-width: 640px){
-      .fc .fc-toolbar{ flex-wrap:wrap; gap:8px; }
-    }
+    body{font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Arial;margin:0;padding:24px;background:#fff;}
+    h1{margin:0 0 12px;color:#7A3E3E}
+    #calendar{max-width:1100px;margin:0 auto;border:1px solid #eadede;border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.05)}
+    .fc .fc-button-primary{background:#7A3E3E;border-color:#7A3E3E}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Habibe Cakery — Availability</h1>
-      <p class="lede">Dates shown here reflect our latest schedule. If a date looks busy, send a quick enquiry — we sometimes can accommodate smaller orders.</p>
-      <div class="legend">
-        <div class="key"><span class="dot"></span>Booked/Busy</div>
-        <div class="key">Tap a date for more details (mobile: pinch/zoom)</div>
-      </div>
-      <div class="loading" id="loading">Updating calendar…</div>
-    </header>
-
-    <div id="calendar"></div>
-
-    <p class="note">Times auto-adjust to your timezone. Calendar updates every few minutes from our private scheduling system.</p>
-    <footer>
-      © <span id="y"></span> Habibe Cakery · Birmingham & Northampton
-    </footer>
-  </div>
+  <h1>Habibe Cakery — Availability</h1>
+  <div id="calendar"></div>
 
   <script>
-    // 1) Put your Worker ICS URL here (must return 'text/calendar' with CORS):
-    const ICS_URL = "ICS_URL_HERE"; // e.g. https://little-hall-b409.old-haze-fb81.workers.dev/
-
-    // Optional: short cache-buster to help GitHub Pages users see recent changes
-    function bust(url){ return url + (url.includes('?') ? '&' : '?') + 'cb=' + Math.floor(Date.now()/ (1000*60*5)); }
-
-    document.getElementById('y').textContent = new Date().getFullYear();
+    // ⬇️ use YOUR custom domain (not workers.dev)
+    const ICS_URL = "https://ics.habibecakery.co";
 
     document.addEventListener('DOMContentLoaded', function() {
-      const loading = document.getElementById('loading');
-      const calendarEl = document.getElementById('calendar');
-
-      const calendar = new FullCalendar.Calendar(calendarEl, {
+      const cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
-        height: 'auto',
         initialView: 'dayGridMonth',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listMonth'
-        },
-        buttonText: {
-          today: 'Today',
-          month: 'Month',
-          week: 'Week',
-          list: 'List'
-        },
-        firstDay: 1, // Monday
-        navLinks: true,
-        selectable: false,
-        nowIndicator: true,
-        displayEventTime: true,
-
-        // Subtle busy styling
-        eventDisplay: 'block',
-        eventBackgroundColor: getComputedStyle(document.documentElement)
-          .getPropertyValue('--brand').trim(),
-        eventBorderColor: getComputedStyle(document.documentElement)
-          .getPropertyValue('--brand').trim(),
-        eventTextColor: '#fff',
-
-        // Load ICS
+        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
         plugins: [ FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.listPlugin, FullCalendar.icalendarPlugin ],
-        eventSources: [{
-          url: bust(ICS_URL),
-          format: 'ics'
-        }],
-
-        loading: function(isLoading) {
-          loading.classList.toggle('show', isLoading);
-        },
-
-        // Optional niceties
-        eventClick: function(info){
-          // Copy event title & time to clipboard for quick replies
-          const e = info.event;
-          const when = e.allDay
-            ? e.start.toLocaleDateString()
-            : e.start.toLocaleString();
-          const text = `${e.title} — ${when}`;
-          navigator.clipboard?.writeText(text).catch(()=>{});
-          // Basic tooltip
-          alert(text);
-        },
-
-        // Only show this many months by default (avoid super heavy ICS)
-        visibleRange: function(currentDate) {
-          // allow default; we control size by default view
-          return null;
-        }
+        eventSources: [{ url: ICS_URL + '?cb=' + Math.floor(Date.now()/300000), format:'ics' }], // cache-bust every 5 min
+        firstDay: 1,
+        eventDisplay: 'block'
       });
-
-      calendar.render();
+      cal.render();
     });
   </script>
 </body>
