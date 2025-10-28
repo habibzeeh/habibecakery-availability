@@ -1,95 +1,126 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- Core FullCalendar CSS from UNPKG -->
-  <link rel="stylesheet" href="https://unpkg.com/fullcalendar@6.1.15/index.global.min.css" />
+  <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
   <style>
-    :root{ --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadee0; --text:#2b2b2b; --pill:#ffd7e2; --pill-border:#ffc3d4; }
-    body{ font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; background:#fff; color:var(--text); margin:0; padding:32px 16px; }
-    h1{ color:var(--brand); text-align:center; margin:0 0 24px; padding-bottom:6px; border-bottom:2px solid var(--accent); letter-spacing:.5px; font-size:1.9rem; font-weight:700; }
+    /* Brand tokens */
+    :root{
+      --brand:#7A3E3E;
+      --accent:#F3E9E7;
+      --border:#eadede;
+      --text:#2b2b2b;
+
+      /* FullCalendar theme vars (safe to set) */
+      --fc-border-color: var(--border);
+      --fc-page-bg-color: #fff;
+      --fc-neutral-bg-color: #fff;
+      --fc-today-bg-color: rgba(122,62,62,0.08);
+      --fc-event-bg-color: var(--brand);
+      --fc-event-border-color: var(--brand);
+      --fc-event-text-color: #fff;
+      --fc-button-bg-color: #fff;
+      --fc-button-border-color: var(--border);
+      --fc-button-text-color: var(--brand);
+      --fc-button-hover-bg-color: #faf6f6;
+      --fc-button-hover-border-color: var(--border);
+      --fc-button-active-bg-color: var(--accent);
+      --fc-button-active-border-color: var(--border);
+    }
+
+    /* Page frame (safe: no display:none / no forced fixed heights) */
+    body{
+      font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+      margin:0; padding:32px 16px; color:var(--text);
+      background: linear-gradient(180deg, var(--accent), #fff);
+    }
+
     .wrap{ max-width:1100px; margin:0 auto; }
-    .legend{ display:flex; gap:18px; align-items:center; margin:0 0 10px 2px; color:#5a5a5a; font-size:14px; }
-    .chip{ display:inline-flex; align-items:center; gap:8px; }
-    .dot{ width:12px; height:12px; border-radius:999px; display:inline-block; border:1px solid #bbb; background:#fff; }
-    .dot.booked{ background:var(--pill); border-color:var(--pill-border); }
-    #calendar{ border:1px solid var(--border); border-radius:14px; overflow:hidden; min-height:640px; box-shadow:0 6px 18px rgba(0,0,0,.05); }
-    .fc .fc-toolbar-title{ color:var(--brand); font-weight:700; }
-    .fc .fc-button-primary{ background:var(--brand); border-color:var(--brand); }
-    .fc .fc-button-primary:hover{ filter:brightness(.9); }
-    .fc .fc-daygrid-event .fc-event-time{ display:none; } /* hide tiny “12p” */
-    .cap-badge{ position:absolute; right:4px; top:4px; font-size:11px; line-height:1; padding:3px 6px; border-radius:10px; background:#e8e8e8; color:#333; }
-    .fc-daygrid-day.fully-booked{ background:#f8f0f0; }
-    .fc-daygrid-day.fully-booked .fc-daygrid-day-number{ color:#b00020; font-weight:700; }
-    .fc-daygrid-day.fully-booked .cap-badge{ background:#b00020; color:#fff; }
+    h1{
+      color:var(--brand); text-align:center; margin:0 0 18px;
+      padding-bottom:8px; border-bottom:2px solid var(--accent);
+      font-weight:700; letter-spacing:.2px;
+    }
+
+    /* Calendar container: let FC manage height; just add chrome */
+    #calendar{
+      border:1px solid var(--border);
+      border-radius:14px; overflow:hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      background:#fff;
+      min-height: 640px;           /* safe floor so it never collapses */
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Gentle polish on FC header */
+    .fc .fc-toolbar.fc-header-toolbar{
+      padding: 10px 12px;
+      background: #fff;
+    }
+    .fc .fc-toolbar-title{
+      color: var(--brand);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .fc .fc-button{
+      border-radius: 10px !important;
+      box-shadow: none !important;
+    }
+
+    /* Day grid tweaks */
+    .fc-theme-standard .fc-scrollgrid{
+      border-left: 0; border-right: 0; /* borders already on #calendar */
+    }
+    .fc .fc-daygrid-day-number{
+      color:#4a3d3d;
+      font-weight:600;
+    }
+    .fc .fc-col-header-cell-cushion{
+      color:#6b5b5b; font-weight:700; text-transform:uppercase; font-size:12px;
+    }
+
+    /* Event chips */
+    .fc .fc-event{
+      border-radius: 8px;
+      padding: 2px 6px;
+    }
+
+    /* List view polish */
+    .fc .fc-list{
+      border: 0;
+    }
+    .fc .fc-list-table tr{
+      border-bottom: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Habibe Cakery — Availability</h1>
-    <div class="legend">
-      <span class="chip"><span class="dot"></span> Available</span>
-      <span class="chip"><span class="dot booked"></span> Fully booked</span>
-    </div>
     <div id="calendar"></div>
   </div>
 
-  <!-- Order matters: ical.js → FullCalendar core → DayGrid → iCalendar -->
-  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
-  <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
-
   <script>
-    const ICS_BASE = 'https://ics.habibecakery.co';   // worker endpoint
-    const DAILY_LIMIT = 5;
-    const BLOCK_TITLES = ['unavailable','blocked','fully booked'];
-
     document.addEventListener('DOMContentLoaded', () => {
       const fc = window.FullCalendar;
-
-      const calendar = new fc.Calendar(document.getElementById('calendar'), {
+      const cal = new fc.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
         initialView: 'dayGridMonth',
-        height: 'auto',
-        firstDay: 1,
-        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth' },
-        displayEventTime: false,
-        plugins: [ fc.dayGridPlugin, fc.icalendarPlugin ],
-
-        eventSources: [{
-          // simple cache-bust query avoids any param-function weirdness
-          url: `${ICS_BASE}?cb=${Date.now()}`,
-          format: 'ics'
-        }],
-
-        eventClassNames(arg){
-          const t = (arg.event.title || '').toLowerCase();
-          return (arg.event.allDay && BLOCK_TITLES.some(s => t.includes(s))) ? ['is-blocked-day'] : [];
-        }
+        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
+        eventSources: [{ url: 'https://ics.habibecakery.co', format: 'ics' }]
       });
+      cal.render();
 
-      calendar.render();
-
-      function key(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-      calendar.setOption('eventsSet', (events) => {
-        const counts = {};
-        for(const ev of events){
-          const t=(ev.title||'').toLowerCase();
-          if(ev.allDay && BLOCK_TITLES.some(s=>t.includes(s))) continue;
-          const k = key(ev.start); counts[k] = (counts[k]||0)+1;
-        }
-        document.querySelectorAll('.fc-daygrid-day').forEach(cell=>{
-          const used = counts[cell.getAttribute('data-date')] || 0;
-          cell.classList.toggle('fully-booked', used >= DAILY_LIMIT);
-          let b = cell.querySelector('.cap-badge'); if(!b){ b=document.createElement('div'); b.className='cap-badge'; cell.appendChild(b); }
-          b.textContent = used ? `${Math.min(used, DAILY_LIMIT)}/${DAILY_LIMIT}` : '';
-        });
-      });
+      // If you ever add dynamic show/hide around #calendar, call:
+      // setTimeout(() => cal.updateSize(), 0);
+      // or on a resize/mutation observer.
     });
   </script>
 </body>
