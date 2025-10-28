@@ -1,30 +1,81 @@
-/* ===== FIX: Navigation arrows visibility ===== */
+:root{
+  --brand:#7A3E3E;
+  --accent:#FCEEF0;     /* soft pink */
+  --border:#eadede;
+  --text:#2b2b2b;
+  --ok:#2e7d32;
+  --full:#d81b60;
+
+  /* FullCalendar theme vars */
+  --fc-border-color: var(--border);
+  --fc-event-bg-color: var(--brand);
+  --fc-event-border-color: var(--brand);
+  --fc-event-text-color: #fff;
+  --fc-today-bg-color: rgba(122,62,62,.08);
+}
+
+body{
+  font-family: ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  margin:0; padding:24px 14px; color:var(--text); background:#fff;
+}
+
+.wrap{ max-width:1100px; margin:0 auto; }
+
+/* Header card — same sweet look as before */
+.hc-header{
+  background: linear-gradient(180deg, #ffe6ec 0%, #fff 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 16px;
+  margin-bottom:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.05);
+}
+.hc-title{
+  margin:0 0 6px 0; color:var(--brand); font-weight:800; font-size:20px; letter-spacing:.2px;
+}
+.hc-sub{ margin:0; color:#7a6c6c; font-size:14px; }
+
+/* Legend */
+.legend{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+.legend-item{ font-size:14px; color:#594f4f; display:flex; align-items:center; }
+.dot{ width:10px; height:10px; border-radius:999px; margin-right:6px; display:inline-block; border:1px solid rgba(0,0,0,.08); }
+.dot.ok{ background:var(--ok); }
+.dot.full{ background:var(--full); opacity:.7; }
+
+/* Calendar shell */
+#calendar{
+  border:1px solid var(--border);
+  border-radius:14px; overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+  background:#fff;
+  min-height:640px;
+}
+
+/* Toolbar — tidy, not heavy */
+.fc .fc-toolbar.fc-header-toolbar{ padding:10px 12px; background:#fff; }
+.fc .fc-toolbar-title{ color:var(--brand); font-weight:700; }
+
+/* Buttons */
+.fc .fc-button{
+  border-radius:10px; border:1px solid var(--border); background:#fff; color:var(--brand);
+}
+.fc .fc-button:hover{ background:#faf6f6; }
+
+/* >>> FIX: make prev/next arrows visible (black) */
 .fc .fc-prev-button .fc-icon,
-.fc .fc-next-button .fc-icon {
-  color: #000 !important;   /* make arrows black and visible */
-  font-size: 1.2rem !important;
-  opacity: 1 !important;
+.fc .fc-next-button .fc-icon{
+  color:#000 !important; font-size:1.2rem !important; opacity:1 !important;
 }
 
-/* Remove any outline or background on hover */
-.fc .fc-prev-button:hover,
-.fc .fc-next-button:hover {
-  background: #fafafa !important;
-}
+/* Day numbers & headers */
+.fc .fc-daygrid-day-number{ font-weight:600; color:#463b3b; }
+.fc .fc-col-header-cell-cushion{ text-transform:uppercase; font-size:12px; color:#6b5b5b; }
 
-/* ===== FIX: Make empty (available) days pure white ===== */
-.fc .fc-daygrid-day {
-  background: #fff !important;
-}
+/* Events look (keep as before) */
+.fc .fc-event{ border-radius:8px; padding:2px 6px; }
 
-/* Keep booked event cells coloured */
-.fc .fc-daygrid-day.fc-event-start,
-.fc .fc-daygrid-day.fc-event-end {
-  background: var(--full, #f9c2d0) !important;
-}
+/* >>> FIX: Available (empty) days should be white */
+.fc .fc-daygrid-day{ background:#fff !important; }
 
-/* Optional: clearer grid borders */
-.fc-theme-standard td, 
-.fc-theme-standard th {
-  border-color: var(--border);
-}
+/* Optional: cleaner grid borders */
+.fc-theme-standard td, .fc-theme-standard th{ border-color:var(--border); }
