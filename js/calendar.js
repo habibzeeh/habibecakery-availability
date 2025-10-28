@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     timeZone: 'Europe/London',
     initialView: 'dayGridMonth',
     headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',                     // we replace this with our pickers
-      right: 'dayGridMonth,timeGridWeek'   // hidden on mobile via CSS
+      left: 'prev,next',     // no Today
+      center: 'title',       // we'll replace with pickers
+      right: ''              // no Month/Week
     },
     eventSources: [
       { url: 'https://ics.habibecakery.co', format: 'ics' }
@@ -63,7 +63,6 @@ function injectPickers(cal){
   // Mobile: single combined select "Mon YYYY"
   const combo = document.createElement('select');
   combo.className = 'hc-select hc-select-combo';
-  // Generate ~36 months around current year for convenience
   const start = new Date(currentYear - 1, 0, 1);
   for(let i = 0; i < 36; i++){
     const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
