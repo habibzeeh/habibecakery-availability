@@ -5,19 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- ✅ Correct CSS (use UNPKG; jsDelivr URLs for these were 404 in your logs) -->
-  <link href="https://unpkg.com/@fullcalendar/core@6.1.15/index.css" rel="stylesheet" />
-  <link href="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.css" rel="stylesheet" />
-  <link href="https://unpkg.com/@fullcalendar/timegrid@6.1.15/index.css" rel="stylesheet" />
-  <link href="https://unpkg.com/@fullcalendar/list@6.1.15/index.css" rel="stylesheet" />
+  <!-- ✅ Single, working CSS that styles all views -->
+  <link href="https://unpkg.com/fullcalendar@6.1.15/index.css" rel="stylesheet" />
 
-  <!-- ✅ FullCalendar JS (global builds) -->
-  <script src="https://unpkg.com/@fullcalendar/core@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
-  <script src="https://unpkg.com/@fullcalendar/list@6.1.15/index.global.min.js"></script>
+  <!-- ✅ FullCalendar global JS (includes dayGrid/timeGrid/list) -->
+  <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
 
-  <!-- ✅ iCal parser + iCalendar plugin (MUST include the plugin; it was missing in your network list) -->
+  <!-- ✅ iCal parser + iCalendar plugin (order matters: ical.js first) -->
   <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
   <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
@@ -41,13 +35,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       const fc = window.FullCalendar;
 
-      // iCalendar plugin can live under different globals depending on build/CDN
+      // Try the possible globals the iCalendar plugin might register
       const icalPlugin =
         (window.FullCalendarIcalendar && window.FullCalendarIcalendar.icalendarPlugin) ||
         (fc && fc.icalendarPlugin) ||
         window.icalendarPlugin;
 
-      if (!fc || !fc.Calendar || !fc.dayGrid || !icalPlugin) {
+      if (!fc || !fc.Calendar || !icalPlugin) {
         console.error('Missing pieces', { fc, icalPlugin });
         document.getElementById('err').hidden = false;
         return;
@@ -63,9 +57,10 @@
         },
         firstDay: 1,
         nowIndicator: true,
-        plugins: [ fc.dayGrid, fc.timeGrid, fc.list, icalPlugin ],
+        // dayGrid/timeGrid/list are already registered by the global bundle
+        plugins: [ icalPlugin ],
         eventSources: [
-          { url: 'https://ics.habibecakery.co', format: 'ics' } // Cloudflare Worker → iCloud ICS
+          { url: 'https://ics.habibecakery.co', format: 'ics' }
         ],
         eventBackgroundColor: '#7A3E3E',
         eventBorderColor: '#7A3E3E',
