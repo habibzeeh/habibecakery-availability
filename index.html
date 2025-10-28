@@ -1,74 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
 
-  <!-- ✅ Single, working CSS that styles all views -->
-  <link href="https://unpkg.com/fullcalendar@6.1.15/index.css" rel="stylesheet" />
+  <!-- No CSS links needed in v6: CSS is injected by JS -->
 
-  <!-- ✅ FullCalendar global JS (includes dayGrid/timeGrid/list) -->
   <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
-
-  <!-- ✅ iCal parser + iCalendar plugin (order matters: ical.js first) -->
   <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
   <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
   <style>
     :root { --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadede; --text:#2b2b2b; }
-    body{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;margin:0;padding:32px 16px;background:#fff;color:var(--text)}
-    h1{color:var(--brand);text-align:center;margin-bottom:24px;border-bottom:2px solid var(--accent);padding-bottom:6px;font-size:1.8rem;letter-spacing:.5px}
-    #calendar{max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:640px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
-    .fc .fc-toolbar-title{font-weight:600;color:var(--brand)}
-    .fc .fc-button-primary{background:var(--brand);border-color:var(--brand)}
-    .fc .fc-button-primary:hover{filter:brightness(.9)}
-    .error{color:#b00020;text-align:center;margin-top:12px;font-weight:600}
+    body{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;margin:0;padding:32px 16px}
+    h1{color:var(--brand);text-align:center;margin-bottom:24px;border-bottom:2px solid var(--accent);padding-bottom:6px}
+    #calendar{max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:640px}
   </style>
 </head>
 <body>
   <h1>Habibe Cakery — Availability</h1>
   <div id="calendar"></div>
-  <p id="err" class="error" hidden>Calendar failed to load. Please refresh.</p>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const fc = window.FullCalendar;
-
-      // Try the possible globals the iCalendar plugin might register
-      const icalPlugin =
-        (window.FullCalendarIcalendar && window.FullCalendarIcalendar.icalendarPlugin) ||
-        (fc && fc.icalendarPlugin) ||
-        window.icalendarPlugin;
-
-      if (!fc || !fc.Calendar || !icalPlugin) {
-        console.error('Missing pieces', { fc, icalPlugin });
-        document.getElementById('err').hidden = false;
-        return;
-      }
-
-      const calendar = new fc.Calendar(document.getElementById('calendar'), {
+      const cal = new fc.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
         initialView: 'dayGridMonth',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listMonth'
-        },
-        firstDay: 1,
-        nowIndicator: true,
-        // dayGrid/timeGrid/list are already registered by the global bundle
-        plugins: [ icalPlugin ],
-        eventSources: [
-          { url: 'https://ics.habibecakery.co', format: 'ics' }
-        ],
-        eventBackgroundColor: '#7A3E3E',
-        eventBorderColor: '#7A3E3E',
-        eventTextColor: '#fff',
-        displayEventTime: true
+        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
+        eventSources: [{ url: 'https://ics.habibecakery.co', format: 'ics' }]
       });
-
-      calendar.render();
+      cal.render();
     });
   </script>
 </body>
