@@ -1,10 +1,10 @@
 :root {
   --brand:#7A3E3E;
-  --accent:#FCEEF0;     
+  --accent:#FCEEF0;      /* soft pink background */
   --border:#eadede;
   --text:#2b2b2b;
-  --ok:#ffffff;          
-  --full:#d81b60;        
+  --ok:#ffffff;           /* available = white */
+  --full:#d81b60;         /* fully booked = pink */
 
   /* FullCalendar theme vars */
   --fc-border-color: var(--border);
@@ -106,8 +106,8 @@ body {
 }
 
 .dot.ok {
-  background: var(--ok);                /* white */
-  border: 1.5px solid var(--border);    /* subtle outline */
+  background: var(--ok);
+  border: 1.5px solid var(--border);
 }
 
 .dot.full {
@@ -125,21 +125,49 @@ body {
   min-height: 640px;
 }
 
-/* ===== FullCalendar toolbar ===== */
+/* ===== Toolbar (month area) ===== */
 .fc .fc-toolbar.fc-header-toolbar {
-  background: #fff;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #fff8fa 0%, #ffffff 100%);
   border-radius: 14px 14px 0 0;
 }
 
-/* Month title */
-.fc .fc-toolbar-title {
+/* (We replace the native title with our dropdowns) */
+.fc .fc-toolbar-title { display: none; }
+
+/* Month/Year dropdown wrapper */
+.hc-monthpicker{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hc-select{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 34px 8px 10px;
+  font-size: 14px;
   color: var(--brand);
   font-weight: 700;
-  font-size: 20px;
-  text-transform: capitalize;
+  position: relative;
+  line-height: 1.1;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #888 50%),
+    linear-gradient(135deg, #888 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
 }
+.hc-select:focus{ outline: none; box-shadow: 0 0 0 3px rgba(122,62,62,.15); }
+.hc-select-month{ min-width: 84px; }
+.hc-select-year{ min-width: 76px; }
 
 /* Buttons */
 .fc .fc-button {
@@ -151,50 +179,34 @@ body {
   text-transform: capitalize;
   transition: all 0.2s ease;
 }
-
-.fc .fc-button:hover {
-  background: var(--accent);
-  color: var(--brand);
-}
-
+.fc .fc-button:hover { background: var(--accent); color: var(--brand); }
 .fc .fc-button-primary:not(:disabled).fc-button-active {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: #fff;
+  background: var(--brand); border-color: var(--brand); color: #fff;
 }
 
-/* Navigation arrows (visible + black) */
+/* Today button text case */
+.fc .fc-today-button { text-transform: capitalize; }
+
+/* Navigation arrows (black + visible) */
 .fc .fc-prev-button .fc-icon,
 .fc .fc-next-button .fc-icon {
   color: #000 !important;
   font-size: 1.2rem !important;
   opacity: 1 !important;
 }
-
 .fc .fc-prev-button:hover,
-.fc .fc-next-button:hover {
-  background: #fafafa !important;
-}
+.fc .fc-next-button:hover { background: #fafafa !important; }
 
 /* ===== Day grid ===== */
-.fc .fc-daygrid-day-number {
-  color: #463b3b;
-  font-weight: 600;
-}
-
+.fc .fc-daygrid-day-number { color: #463b3b; font-weight: 600; }
 .fc .fc-col-header-cell-cushion {
-  color: #6b5b5b;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 12px;
+  color: #6b5b5b; font-weight: 700; text-transform: uppercase; font-size: 12px;
 }
 
-/* Available (empty) days = white background */
-.fc .fc-daygrid-day {
-  background: #fff !important;
-}
+/* Available (empty) days */
+.fc .fc-daygrid-day { background: #fff !important; }
 
-/* Fully booked events (pink chip) */
+/* Fully booked events */
 .fc .fc-event {
   border-radius: 8px;
   padding: 2px 6px;
@@ -204,42 +216,33 @@ body {
 }
 
 /* Grid borders cleaner */
-.fc-theme-standard td, 
-.fc-theme-standard th {
-  border-color: var(--border);
-}
+.fc-theme-standard td, .fc-theme-standard th { border-color: var(--border); }
 
 /* ===== Mobile responsiveness ===== */
 @media (max-width: 640px) {
   .wrap { padding: 0 6px; }
 
-  /* Header text sizing */
   .hc-title { font-size: 18px; }
   .hc-sub   { font-size: 13px; }
 
-  /* Toolbar layout */
+  /* One-row toolbar with dropdowns centered */
   .fc .fc-toolbar.fc-header-toolbar {
     display: grid;
-    grid-template-columns: 1fr;
-    row-gap: 8px;
-    padding: 8px 10px;
+    grid-template-areas: "nav pickers views";
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: 8px;
+    padding: 10px;
   }
-  .fc .fc-toolbar-chunk { justify-content: center; }
+  .fc .fc-toolbar-chunk:first-child { grid-area: nav;   justify-content: flex-start; }
+  .fc .fc-toolbar-chunk:nth-child(2){ grid-area: pickers; display:flex; justify-content:center; }
+  .fc .fc-toolbar-chunk:last-child  { grid-area: views; justify-content: flex-end; }
 
-  /* Buttons smaller */
-  .fc .fc-button {
-    padding: 6px 10px;
-    font-size: 13px;
-  }
+  .hc-monthpicker { justify-content: center; }
+  .hc-select { padding: 6px 32px 6px 10px; font-size: 13px; }
 
-  /* Month title smaller */
-  .fc .fc-toolbar-title {
-    font-size: 22px;
-    line-height: 1.2;
-    text-align: center;
-  }
+  .fc .fc-button { padding: 6px 10px; font-size: 13px; }
 
-  /* Day grid tighter */
   .fc .fc-daygrid-day-number { font-size: 13px; }
   .fc .fc-daygrid-day-frame  { min-height: 56px; }
 }
