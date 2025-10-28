@@ -4,17 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Habibe Cakery — Availability</title>
-  
-  <!-- FullCalendar: core CSS + JS (single package) -->
-  <link href="https://unpkg.com/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
-  <script src="https://unpkg.com/fullcalendar@6.1.15/index.global.min.js"></script>
-  
-  <!-- Plugins from the same package (avoid mixed sources) -->
-  <script src="https://unpkg.com/fullcalendar@6.1.15/daygrid/index.global.min.js"></script>
-  <script src="https://unpkg.com/fullcalendar@6.1.15/icalendar/index.global.min.js"></script>
-  
-  <!-- iCal parser MUST load before the icalendar plugin -->
-  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
+
+  <!-- FullCalendar (single bundle paths that exist) -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/daygrid/index.global.min.js"></script>
+
+  <!-- iCal: parser FIRST, then FullCalendar iCalendar plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/icalendar/index.global.min.js"></script>
 
   <style>
     :root { --brand:#7A3E3E; --accent:#F3E9E7; --border:#eadede; --text:#2b2b2b; }
@@ -37,47 +35,26 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      
-      const fc = window.FullCalendar;
-      const calendar = new fc.Calendar(document.getElementById('calendar'), {
-        initialView: 'dayGridMonth',
-        plugins: [ fc.dayGridPlugin, fc.icalendarPlugin ],
-        eventSources: [
-          {
-            url: 'https://ics.habibecakery.co', // your Cloudflare Worker endpoint
-            format: 'ics'
-          }
-        ]
-      });
-    
-    calendar.render();
+      const fc = window.FullCalendar;                 // FullCalendar namespace
+      const icalPlugin = fc?.icalendarPlugin;         // provided by the icalendar script
+
+      if (!fc || !fc.Calendar || !fc.dayGridPlugin || !icalPlugin) {
+        console.error('Plugins missing', { fc, icalPlugin });
+        document.getElementById('err').hidden = false;
+        return;
+      }
 
       const calendar = new fc.Calendar(document.getElementById('calendar'), {
         timeZone: 'Europe/London',
         initialView: 'dayGridMonth',
         height: 'auto',
-        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
-        buttonText: { today:'Today', month:'Month', week:'Week', list:'List' },
+        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth' },
         firstDay: 1,
-        nowIndicator: true,
-        eventDisplay: 'block',
-
-        plugins: [
-          fc.dayGridPlugin,
-          fc.timeGridPlugin,
-          fc.listPlugin,
-          icalPlugin
-        ],
-
+        plugins: [ fc.dayGridPlugin, icalPlugin ],
         eventSources: [{
-          url: ICS_URL + '?cb=' + Math.floor(Date.now() / (1000 * 60 * 5)), // cache-bust every 5 mins
+          url: 'https://ics.habibecakery.co',  // your Worker endpoint
           format: 'ics'
-        }],
-
-        eventBackgroundColor: '#7A3E3E',
-        eventBorderColor: '#7A3E3E',
-        eventTextColor: '#fff',
-        displayEventTime: true
+        }]
       });
 
       calendar.render();
