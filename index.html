@@ -12,33 +12,32 @@
   <script src="https://unpkg.com/@fullcalendar/list@6.1.15/index.global.min.js"></script>
   <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
 
-  <style>
-    body{font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Arial;margin:0;padding:24px;background:#fff;}
-    h1{margin:0 0 12px;color:#7A3E3E}
-    #calendar{max-width:1100px;margin:0 auto;border:1px solid #eadede;border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.05)}
-    .fc .fc-button-primary{background:#7A3E3E;border-color:#7A3E3E}
-  </style>
+<style>
+  /* …keep your styles… */
+  #calendar{ max-width:1100px; margin:0 auto; border:1px solid #eadede; border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.05); min-height:640px; }
+</style>
+
 </head>
 <body>
   <h1>Habibe Cakery — Availability</h1>
   <div id="calendar"></div>
 
-  <script>
-    // ⬇️ use YOUR custom domain (not workers.dev)
-    const ICS_URL = "https://ics.habibecakery.co";
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
-        timeZone: 'Europe/London',
-        initialView: 'dayGridMonth',
-        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
-        plugins: [ FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.listPlugin, FullCalendar.icalendarPlugin ],
-        eventSources: [{ url: ICS_URL + '?cb=' + Math.floor(Date.now()/300000), format:'ics' }], // cache-bust every 5 min
-        firstDay: 1,
-        eventDisplay: 'block'
-      });
-      cal.render();
+<script>
+  const ICS_URL = "https://ics.habibecakery.co";
+  document.addEventListener('DOMContentLoaded', function () {
+    const cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
+      timeZone: 'Europe/London',
+      initialView: 'dayGridMonth',
+      headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,listMonth' },
+      // ⬇️ use these globals (not FullCalendar.dayGridPlugin, etc.)
+      plugins: [ dayGridPlugin, timeGridPlugin, listPlugin, icalendarPlugin ],
+      eventSources: [{ url: ICS_URL + '?cb=' + Math.floor(Date.now()/300000), format: 'ics' }],
+      firstDay: 1,
+      eventDisplay: 'block'
     });
-  </script>
+    cal.render();
+  });
+</script>
+
 </body>
 </html>
