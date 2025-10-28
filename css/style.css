@@ -1,63 +1,30 @@
-/* ===== FullCalendar toolbar styling ===== */
-.fc .fc-toolbar.fc-header-toolbar {
-  background: #fff;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  border-radius: 14px 14px 0 0;
+/* ===== FIX: Navigation arrows visibility ===== */
+.fc .fc-prev-button .fc-icon,
+.fc .fc-next-button .fc-icon {
+  color: #000 !important;   /* make arrows black and visible */
+  font-size: 1.2rem !important;
+  opacity: 1 !important;
 }
 
-/* Calendar title (month/year) */
-.fc .fc-toolbar-title {
-  color: var(--brand);
-  font-weight: 700;
-  font-size: 18px;
-  text-transform: capitalize;
+/* Remove any outline or background on hover */
+.fc .fc-prev-button:hover,
+.fc .fc-next-button:hover {
+  background: #fafafa !important;
 }
 
-/* Toolbar buttons (today / month / week / list) */
-.fc .fc-button {
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #fff;
-  color: var(--brand);
-  font-weight: 600;
-  text-transform: capitalize;
-  transition: all 0.2s ease;
+/* ===== FIX: Make empty (available) days pure white ===== */
+.fc .fc-daygrid-day {
+  background: #fff !important;
 }
 
-.fc .fc-button:hover {
-  background: var(--accent);
-  color: var(--brand);
+/* Keep booked event cells coloured */
+.fc .fc-daygrid-day.fc-event-start,
+.fc .fc-daygrid-day.fc-event-end {
+  background: var(--full, #f9c2d0) !important;
 }
 
-.fc .fc-button-primary:not(:disabled).fc-button-active {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: #fff;
-}
-
-/* Navigation arrows */
-.fc .fc-button-group .fc-prev-button span,
-.fc .fc-button-group .fc-next-button span {
-  color: #000 !important; /* make arrows black and visible */
-  font-weight: bold;
-  font-size: 18px;
-}
-
-/* ===== Day cells ===== */
-.fc .fc-daygrid-day-number {
-  color: #463b3b;
-  font-weight: 600;
-}
-
-/* Available (no events) → white background */
-.fc .fc-daygrid-day.fc-day:not(.fc-event-start):not(.fc-event-end) {
-  background: #fff;
-}
-
-/* Fully booked events (optional: soft pink background) */
-.fc-event {
-  background: var(--full);
-  border-color: var(--full);
-  color: #fff !important;
+/* Optional: clearer grid borders */
+.fc-theme-standard td, 
+.fc-theme-standard th {
+  border-color: var(--border);
 }
