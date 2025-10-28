@@ -33,14 +33,17 @@
     </style>
 
     <!-- ✅ FullCalendar core + plugins (correct MIME-compatible URLs) -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/daygrid/index.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/icalendar/index.global.min.js"></script>
+  <link href="https://unpkg.com/@fullcalendar/core@6.1.15/index.global.css" rel="stylesheet" />
+  
+  <script src="https://unpkg.com/@fullcalendar/core@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/list@6.1.15/index.global.min.js"></script>
+  
+  <!-- iCal support (ical.js FIRST, then the plugin) -->
+  <script src="https://unpkg.com/ical.js@1.5.0/build/ical.min.js"></script>
+  <script src="https://unpkg.com/@fullcalendar/icalendar@6.1.15/index.global.min.js"></script>
+
   </head>
 
   <body>
